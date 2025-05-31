@@ -38,8 +38,11 @@ namespace AlphaFeatureToggler.ConsoleDemo
                         Enabled = true,
                         Attributes = new Dictionary<string, object>
                         {
-                            { "MinimumUserTier", "Premium" },
-                            { "RolloutPercentage", 25 }
+                            { "MinimumUserTier", "Premium" }
+                        },
+                        Options = new FeatureConfigOptions
+                        {
+                            RolloutPercentage = 25
                         }
                     },
                     new FeatureConfig
@@ -59,9 +62,12 @@ namespace AlphaFeatureToggler.ConsoleDemo
                         Attributes = new Dictionary<string, object>
                         {
                             { "KillSwitch", false },
-                            { "RolloutPercentage", 20 },
                             { "AllowList", new List<string> { "user1", "user2" } },
                             { "DenyList", new List<string> { "user3" } }
+                        },
+                        Options = new FeatureConfigOptions
+                        {
+                            RolloutPercentage = 20
                         }
                     },
                     new FeatureConfig
@@ -71,9 +77,12 @@ namespace AlphaFeatureToggler.ConsoleDemo
                         Attributes = new Dictionary<string, object>
                         {
                             { "KillSwitch", false },
-                            { "RolloutPercentage", 50 },
                             { "AllowList", new List<string> { "admin1", "admin2" } },
                             { "DenyList", new List<string> { "guest1" } }
+                        },
+                        Options = new FeatureConfigOptions
+                        {
+                            RolloutPercentage = 50
                         }
                     }
                 };

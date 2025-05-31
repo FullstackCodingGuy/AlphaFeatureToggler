@@ -118,6 +118,8 @@ namespace AlphaFeatureToggler.Core
         {
             var env = environment ?? _options.Environment;
             var attributes = GetFeatureAttributes(featureName);
+            var featureConfig = _options.Features?.FirstOrDefault(f => f.Name == featureName);
+            var options = featureConfig?.Options;
 
             if (attributes != null)
             {
@@ -146,14 +148,29 @@ namespace AlphaFeatureToggler.Core
                     if (deniedUsers.Contains(userContext.UserId))
                         return false;
                 }
+            }
 
-                // Check rollout percentage
-                if (attributes.TryGetValue("RolloutPercentage", out var rolloutPercentage) && rolloutPercentage is int percentage)
-                {
-                    var bucketValue = GetBucketValue(userContext.UserId, featureName);
-                    if (bucketValue < percentage)
-                        return true;
-                }
+            // Check SpecificUsers in Options
+            if (options != null && options.SpecificUsers != null && options.SpecificUsers.Count > 0)
+            {
+                if (options.SpecificUsers.Contains(userContext.UserId))
+                    return true;
+            }
+
+            // Check SpecificUserGroups in Options (if userContext.Segment is used as group)
+            if (options != null && options.SpecificUserGroups != null && options.SpecificUserGroups.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(userContext.Segment) && options.SpecificUserGroups.Contains(userContext.Segment))
+                    return true;
+            }
+
+            // Check rollout percentage in Options
+            if (options != null)
+            {
+                var percentage = options.RolloutPercentage;
+                var bucketValue = GetBucketValue(userContext.UserId, featureName);
+                if (bucketValue < percentage)
+                    return true;
             }
 
             // Fallback to global flag state

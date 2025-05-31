@@ -1,8 +1,6 @@
 using AlphaFeatureToggler.Core;
 using AlphaFeatureToggler.Integration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.FeatureManagement;
-using System;
 
 namespace AlphaFeatureToggler
 {

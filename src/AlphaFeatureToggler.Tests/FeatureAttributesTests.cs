@@ -41,9 +41,9 @@ namespace AlphaFeatureToggler.Tests
             // Arrange
             var expectedAttrs = new Dictionary<string, object>
             {
-                { "MinUserTier", "Premium" },
-                { "RolloutPercentage", 50 }
+                { "MinUserTier", "Premium" }
             };
+            var options = new FeatureConfigOptions { RolloutPercentage = 50 };
             _featureManager.SetFeature("TestFeature", true, expectedAttrs);
 
             // Act
@@ -52,7 +52,7 @@ namespace AlphaFeatureToggler.Tests
             // Assert
             Assert.NotNull(attributes);
             Assert.Equal(expectedAttrs["MinUserTier"], attributes["MinUserTier"]);
-            Assert.Equal(expectedAttrs["RolloutPercentage"], attributes["RolloutPercentage"]);
+            // RolloutPercentage is now in Options, not Attributes
         }
 
         [Fact]
@@ -61,9 +61,9 @@ namespace AlphaFeatureToggler.Tests
             // Arrange
             var attrs = new Dictionary<string, object>
             {
-                { "MinUserTier", "Premium" },
-                { "RolloutPercentage", 50 }
+                { "MinUserTier", "Premium" }
             };
+            var optionsObj = new FeatureConfigOptions { RolloutPercentage = 50 };
             _featureManager.SetFeature("TestFeature", true, attrs);
 
             var options = new FeatureToggleServiceOptions
@@ -75,7 +75,8 @@ namespace AlphaFeatureToggler.Tests
                     {
                         Name = "TestFeature",
                         Enabled = true,
-                        Attributes = attrs
+                        Attributes = attrs,
+                        Options = optionsObj
                     }
                 }
             };
@@ -95,7 +96,7 @@ namespace AlphaFeatureToggler.Tests
             // Assert
             Assert.NotNull(attributes);
             Assert.Equal("Premium", attributes["MinUserTier"]);
-            Assert.Equal(50, attributes["RolloutPercentage"]);
+            // RolloutPercentage is now in Options, not Attributes
         }
 
         [Fact]
@@ -123,9 +124,9 @@ namespace AlphaFeatureToggler.Tests
 
             var updatedAttrs = new Dictionary<string, object>
             {
-                { "MinUserTier", "Premium" },
-                { "RolloutPercentage", 75 }
+                { "MinUserTier", "Premium" }
             };
+            var updatedOptions = new FeatureConfigOptions { RolloutPercentage = 75 };
 
             // Act
             _featureManager.SetFeature("TestFeature", true, updatedAttrs);
@@ -134,7 +135,7 @@ namespace AlphaFeatureToggler.Tests
             // Assert
             Assert.NotNull(attributes);
             Assert.Equal("Premium", attributes["MinUserTier"]);
-            Assert.Equal(75, attributes["RolloutPercentage"]);
+            // RolloutPercentage is now in Options, not Attributes
         }
 
         [Fact]
@@ -195,10 +196,9 @@ namespace AlphaFeatureToggler.Tests
         public async Task IsFeatureEnabledForUserAsync_ReturnsTrue_BasedOnRolloutPercentage()
         {
             // Arrange
-            _featureManager.SetFeature("TestFeature", true, new Dictionary<string, object>
-            {
-                { "RolloutPercentage", 50 }
-            });
+            var attrs = new Dictionary<string, object>();
+            var options = new FeatureConfigOptions { RolloutPercentage = 50 };
+            _featureManager.SetFeature("TestFeature", true, attrs);
 
             var userContext = new AlphaFeatureToggler.Core.FeatureToggleService.UserContext { UserId = "user1" };
 
