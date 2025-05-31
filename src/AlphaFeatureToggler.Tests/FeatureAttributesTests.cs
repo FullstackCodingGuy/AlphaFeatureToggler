@@ -136,5 +136,78 @@ namespace AlphaFeatureToggler.Tests
             Assert.Equal("Premium", attributes["MinUserTier"]);
             Assert.Equal(75, attributes["RolloutPercentage"]);
         }
+
+        [Fact]
+        public async Task IsFeatureEnabledForUserAsync_ReturnsFalse_WhenKillSwitchIsActive()
+        {
+            // Arrange
+            _featureManager.SetFeature("TestFeature", true, new Dictionary<string, object>
+            {
+                { "KillSwitch", true }
+            });
+
+            var userContext = new AlphaFeatureToggler.Core.FeatureToggleService.UserContext { UserId = "user1" };
+
+            // Act
+            var isEnabled = await _service.IsFeatureEnabledForUserAsync("TestFeature", userContext);
+
+            // Assert
+            Assert.False(isEnabled);
+        }
+
+        [Fact]
+        public async Task IsFeatureEnabledForUserAsync_ReturnsTrue_WhenUserIsInAllowList()
+        {
+            // Arrange
+            _featureManager.SetFeature("TestFeature", true, new Dictionary<string, object>
+            {
+                { "AllowList", new List<string> { "user1" } }
+            });
+
+            var userContext = new AlphaFeatureToggler.Core.FeatureToggleService.UserContext { UserId = "user1" };
+
+            // Act
+            var isEnabled = await _service.IsFeatureEnabledForUserAsync("TestFeature", userContext);
+
+            // Assert
+            Assert.True(isEnabled);
+        }
+
+        [Fact]
+        public async Task IsFeatureEnabledForUserAsync_ReturnsFalse_WhenUserIsInDenyList()
+        {
+            // Arrange
+            _featureManager.SetFeature("TestFeature", true, new Dictionary<string, object>
+            {
+                { "DenyList", new List<string> { "user1" } }
+            });
+
+            var userContext = new AlphaFeatureToggler.Core.FeatureToggleService.UserContext { UserId = "user1" };
+
+            // Act
+            var isEnabled = await _service.IsFeatureEnabledForUserAsync("TestFeature", userContext);
+
+            // Assert
+            Assert.False(isEnabled);
+        }
+
+        [Fact]
+        public async Task IsFeatureEnabledForUserAsync_ReturnsTrue_BasedOnRolloutPercentage()
+        {
+            // Arrange
+            _featureManager.SetFeature("TestFeature", true, new Dictionary<string, object>
+            {
+                { "RolloutPercentage", 50 }
+            });
+
+            var userContext = new AlphaFeatureToggler.Core.FeatureToggleService.UserContext { UserId = "user1" };
+
+            // Act
+            var isEnabled = await _service.IsFeatureEnabledForUserAsync("TestFeature", userContext);
+
+            // Assert
+            // Assuming deterministic hashing places "user1" within the 50% rollout.
+            Assert.True(isEnabled);
+        }
     }
 }

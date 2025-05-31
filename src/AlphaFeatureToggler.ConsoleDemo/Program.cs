@@ -51,6 +51,30 @@ namespace AlphaFeatureToggler.ConsoleDemo
                             { "AllowedRoles", new[] { "Admin", "Developer" } },
                             { "ExpirationDate", "2024-12-31" }
                         }
+                    },
+                    new FeatureConfig 
+                    { 
+                        Name = "NewSearchUI",
+                        Enabled = true,
+                        Attributes = new Dictionary<string, object>
+                        {
+                            { "KillSwitch", false },
+                            { "RolloutPercentage", 20 },
+                            { "AllowList", new List<string> { "user1", "user2" } },
+                            { "DenyList", new List<string> { "user3" } }
+                        }
+                    },
+                    new FeatureConfig
+                    {
+                        Name = "BetaFeature",
+                        Enabled = true,
+                        Attributes = new Dictionary<string, object>
+                        {
+                            { "KillSwitch", false },
+                            { "RolloutPercentage", 50 },
+                            { "AllowList", new List<string> { "admin1", "admin2" } },
+                            { "DenyList", new List<string> { "guest1" } }
+                        }
                     }
                 };
             });

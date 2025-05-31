@@ -112,5 +112,68 @@ namespace AlphaFeatureToggler.Core
                 return mgr.GetAttributes(featureName);
             return null;
         }
+
+        // Updated: Feature rollout strategy implementation
+        public async Task<bool> IsFeatureEnabledForUserAsync(string featureName, UserContext userContext, FeatureEnvironment? environment = null)
+        {
+            var env = environment ?? _options.Environment;
+            var attributes = GetFeatureAttributes(featureName);
+
+            if (attributes != null)
+            {
+                // Check for kill switch
+                if (attributes.TryGetValue("KillSwitch", out var killSwitch) && killSwitch is bool isKillSwitchActive && isKillSwitchActive)
+                {
+                    return false;
+                }
+
+                // Check if globally disabled
+                if (attributes.TryGetValue("Enabled", out var isEnabled) && isEnabled is bool globallyEnabled && !globallyEnabled)
+                {
+                    return false;
+                }
+
+                // Check allow list
+                if (attributes.TryGetValue("AllowList", out var allowList) && allowList is List<string> allowedUsers)
+                {
+                    if (allowedUsers.Contains(userContext.UserId))
+                        return true;
+                }
+
+                // Check deny list
+                if (attributes.TryGetValue("DenyList", out var denyList) && denyList is List<string> deniedUsers)
+                {
+                    if (deniedUsers.Contains(userContext.UserId))
+                        return false;
+                }
+
+                // Check rollout percentage
+                if (attributes.TryGetValue("RolloutPercentage", out var rolloutPercentage) && rolloutPercentage is int percentage)
+                {
+                    var bucketValue = GetBucketValue(userContext.UserId, featureName);
+                    if (bucketValue < percentage)
+                        return true;
+                }
+            }
+
+            // Fallback to global flag state
+            return await IsEnabledAsync(featureName, env);
+        }
+
+        private int GetBucketValue(string userId, string featureName)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            var hash = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(userId + featureName));
+            return BitConverter.ToInt32(hash, 0) % 100;
+        }
+
+        // Define UserContext class for feature rollout strategy
+        public class UserContext
+        {
+            public string UserId { get; set; } = string.Empty;
+            public string? Email { get; set; }
+            public string? Segment { get; set; }
+            public bool IsInternal { get; set; }
+        }
     }
 }
