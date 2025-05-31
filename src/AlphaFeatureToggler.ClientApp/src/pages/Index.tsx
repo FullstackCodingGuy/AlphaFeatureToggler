@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +15,15 @@ import ViewModeToggle from '@/components/ViewModeToggle';
 import LoginForm from '@/components/LoginForm';
 import SignupForm from '@/components/SignupForm';
 import { useFeatureFlagStore } from '@/stores/featureFlagStore';
+import { Avatar } from '@mui/material';
+import Popover from '@mui/material/Popover';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Index = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -43,29 +51,29 @@ const Index = () => {
     updateFlag
   } = useFeatureFlagStore();
 
-  const handleEditFlag = (flag: any) => {
+  const handleEditFlag = (flag: unknown) => {
     setEditingFlag(flag);
     setIsEditModalOpen(true);
   };
 
-  const handleApplyFilters = (newFilters: any) => {
+  const handleApplyFilters = (newFilters: unknown) => {
     setFilters(newFilters);
     console.log('Applied filters:', newFilters);
   };
 
-  const handleLogin = (credentials: any) => {
+  const handleLogin = (credentials: unknown) => {
     console.log('Login:', credentials);
     setIsAuthenticated(true);
   };
 
-  const handleSignup = (userData: any) => {
+  const handleSignup = (userData: unknown) => {
     console.log('Signup:', userData);
     setIsAuthenticated(true);
   };
 
-  const handleCreateFlag = (flagData: any) => {
+  const handleCreateFlag = (flagData: unknown) => {
     const newFlag = {
-      ...flagData,
+      ...(flagData as object),
       id: Date.now().toString(),
       lastModified: 'Just now',
       createdBy: 'current.user@company.com'
@@ -73,14 +81,25 @@ const Index = () => {
     addFlag(newFlag);
   };
 
-  const handleUpdateFlag = (flagData: any) => {
+  const handleUpdateFlag = (flagData: unknown) => {
     if (editingFlag) {
-      updateFlag(editingFlag.id, {
-        ...flagData,
+      updateFlag((editingFlag as { id: string }).id, {
+        ...(flagData as object),
         lastModified: 'Just now'
       });
     }
   };
+
+  // Demo user (replace with real user context in production)
+  const user = { name: 'John Doe', email: 'john.doe@company.com', avatarUrl: '' };
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
 
   if (!isAuthenticated) {
     return authMode === 'login' ? (
@@ -98,98 +117,103 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Enhanced Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {/* Brand Section */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
+      {/* Refined Header */}
+      <header className="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-2">
+          {/* Top Row: Brand & Logout */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-100">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg">
-                  <Zap className="h-6 w-6 text-white" />
+                  <Zap className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    FeatureFlow
+                  <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
+                    AlphaFeatureToggler
                   </h1>
-                  <p className="text-xs text-slate-500">Enterprise Feature Management</p>
+                  <p className="text-xs text-slate-500 font-medium">A feature manager for every app.</p>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 hidden md:inline-flex">
+              <Badge variant="secondary" className="bg-blue-100 text-blue-700 ml-2 px-3 py-1 rounded-full text-xs font-semibold hidden md:inline-flex">
                 Multi-Tenant SaaS
               </Badge>
             </div>
-
-            <div className="flex items-center space-x-3">
-              <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAuthenticated(false)}
-                className="bg-white/70 hover:bg-white/90"
+            <div className="flex items-center gap-3">
+              {/* User Profile Avatar Section */}
+              <div className="flex items-center gap-2 cursor-pointer" onClick={handleProfileClick}>
+                <Avatar alt={user.name} src={user.avatarUrl} sx={{ width: 32, height: 32, bgcolor: '#6366f1', fontSize: 16 }}>
+                  {user.name[0]}
+                </Avatar>
+                <span className="hidden sm:inline text-sm font-medium text-slate-700">{user.name}</span>
+              </div>
+              <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                PaperProps={{ sx: { minWidth: 180, p: 1 } }}
               >
-                Logout
-              </Button>
+                <List>
+                  <ListItem component="button" onClick={handlePopoverClose}>
+                    <ListItemIcon><PersonIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText primary="Profile" />
+                  </ListItem>
+                  <ListItem component="button" onClick={handlePopoverClose}>
+                    <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText primary="Settings" />
+                  </ListItem>
+                  <ListItem component="button" onClick={() => { handlePopoverClose(); setIsAuthenticated(false); }}>
+                    <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText primary="Logout" />
+                  </ListItem>
+                </List>
+              </Popover>
             </div>
           </div>
 
-          {/* Controls Section - Improved Layout */}
-          <div className="space-y-4">
-            {/* Top Row - Tenant Selector and Create Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex-1 max-w-xs">
-                <TenantSelector 
-                  selected={selectedTenant}
-                  onSelect={setSelectedTenant}
-                />
-              </div>
-              
+          {/* Bottom Row: Controls */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 flex-1">
+              <TenantSelector 
+                selected={selectedTenant}
+                onSelect={setSelectedTenant}
+              />
+              <ApplicationSelector 
+                selected={selectedApplication}
+                onSelect={setSelectedApplication}
+              />
+              <EnvironmentSelector 
+                selected={selectedEnvironment}
+                onSelect={setSelectedEnvironment}
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch md:items-center mt-2 md:mt-0">
               <Button 
                 onClick={() => setIsCreateModalOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 sm:w-auto w-full"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Flag
               </Button>
-            </div>
-
-            {/* Bottom Row - App/Env Selectors and Search */}
-            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-              <div className="flex flex-col sm:flex-row gap-3 lg:flex-1">
-                <div className="flex-1 sm:max-w-xs">
-                  <ApplicationSelector 
-                    selected={selectedApplication}
-                    onSelect={setSelectedApplication}
-                  />
-                </div>
-                <div className="flex-1 sm:max-w-xs">
-                  <EnvironmentSelector 
-                    selected={selectedEnvironment}
-                    onSelect={setSelectedEnvironment}
-                  />
-                </div>
+              <div className="relative flex-1 min-w-[180px]">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <Input
+                  placeholder="Search feature flags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-white/70 border-slate-200 focus:border-blue-400"
+                />
               </div>
-
-              <div className="flex gap-2 lg:flex-shrink-0">
-                <div className="relative flex-1 lg:w-80">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search feature flags..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/70 border-slate-200 focus:border-blue-400"
-                  />
-                </div>
-                <Button
-                  variant="outline"
-                  size="default"
-                  onClick={() => setIsFilterDialogOpen(true)}
-                  className="bg-white/70 hover:bg-white/90 flex-shrink-0"
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Filters</span>
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="default"
+                onClick={() => setIsFilterDialogOpen(true)}
+                className="bg-white/80 hover:bg-white/90 border-slate-300 flex-shrink-0"
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Filters</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -262,33 +286,39 @@ const Index = () => {
 
         {/* Enhanced Tabs */}
         <Tabs defaultValue="flags" className="space-y-6">
-          <TabsList className="bg-white/80 backdrop-blur-sm border-0 shadow-lg p-1 rounded-xl w-full sm:w-auto">
-            <TabsTrigger 
-              value="flags" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200 rounded-lg flex-1 sm:flex-initial"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Feature Flags</span>
-              <span className="sm:hidden">Flags</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="security" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200 rounded-lg flex-1 sm:flex-initial"
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Security & Approvals</span>
-              <span className="sm:hidden">Security</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="audit" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200 rounded-lg flex-1 sm:flex-initial"
-            >
-              <Activity className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Audit Log</span>
-              <span className="sm:hidden">Audit</span>
-            </TabsTrigger>
-          </TabsList>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start mb-4">
+            <div>
+              <TabsList className="bg-white/80 backdrop-blur-sm border-0 shadow-lg p-1 rounded-xl w-full sm:w-auto">
+                <TabsTrigger 
+                  value="flags" 
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200 rounded-lg flex-1 sm:flex-initial"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Feature Flags</span>
+                  <span className="sm:hidden">Flags</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="security" 
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200 rounded-lg flex-1 sm:flex-initial"
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Security & Approvals</span>
+                  <span className="sm:hidden">Security</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="audit" 
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200 rounded-lg flex-1 sm:flex-initial"
+                >
+                  <Activity className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Audit Log</span>
+                  <span className="sm:hidden">Audit</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <div className="flex justify-end w-full">
+              <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+            </div>
+          </div>
           <TabsContent value="flags">
             <FlagDashboard 
               onEditFlag={handleEditFlag}

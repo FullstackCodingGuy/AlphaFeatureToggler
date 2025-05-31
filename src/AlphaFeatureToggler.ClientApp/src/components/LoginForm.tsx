@@ -40,7 +40,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToSignup }) => {
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Welcome Back
           </CardTitle>
-          <p className="text-slate-600 mt-2">Sign in to your FeatureFlow account</p>
+          <p className="text-slate-600 mt-2">Sign in to your account</p>
         </CardHeader>
 
         <CardContent className="space-y-6">
