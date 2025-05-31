@@ -30,6 +30,29 @@ namespace AlphaFeatureToggler.ConsoleDemo
                 opt.Environment = FeatureEnvironment.Development;
                 opt.EnableCaching = true;
                 opt.FeatureCacheSeconds = 10;
+                opt.Features = new List<FeatureConfig>
+                {
+                    new FeatureConfig 
+                    { 
+                        Name = "PremiumFeature",
+                        Enabled = true,
+                        Attributes = new Dictionary<string, object>
+                        {
+                            { "MinimumUserTier", "Premium" },
+                            { "RolloutPercentage", 25 }
+                        }
+                    },
+                    new FeatureConfig
+                    {
+                        Name = "BetaFeature",
+                        Enabled = true,
+                        Attributes = new Dictionary<string, object>
+                        {
+                            { "AllowedRoles", new[] { "Admin", "Developer" } },
+                            { "ExpirationDate", "2024-12-31" }
+                        }
+                    }
+                };
             });
             var provider = services.BuildServiceProvider();
             var toggler = (FeatureToggleService)provider.GetRequiredService<IFeatureToggleService>();
@@ -90,6 +113,29 @@ namespace AlphaFeatureToggler.ConsoleDemo
             featureManager.SetFeature("LiveUpdate", true);
             toggler.ClearFeatureCache();
             Console.WriteLine($"LiveUpdate after propagation: {await toggler.IsEnabledAsync("LiveUpdate")}");
+
+            Console.WriteLine("\n--- Feature Attributes Demo ---");
+            
+            // Demonstrate PremiumFeature attributes
+            var premiumAttrs = toggler.GetFeatureAttributes("PremiumFeature");
+            Console.WriteLine("PremiumFeature Attributes:");
+            Console.WriteLine($"Minimum Tier: {premiumAttrs?["MinimumUserTier"]}");
+            Console.WriteLine($"Rollout Percentage: {premiumAttrs?["RolloutPercentage"]}%");
+
+            // Demonstrate BetaFeature attributes
+            var betaAttrs = toggler.GetFeatureAttributes("BetaFeature");
+            Console.WriteLine("\nBetaFeature Attributes:");
+            var allowedRoles = betaAttrs?["AllowedRoles"] as string[];
+            Console.WriteLine($"Allowed Roles: {string.Join(", ", allowedRoles ?? Array.Empty<string>())}");
+            Console.WriteLine($"Expiration Date: {betaAttrs?["ExpirationDate"]}");
+
+            // Example of using attributes for access control
+            foreach (var user in users)
+            {
+                bool canAccessBeta = await toggler.IsEnabledAsync("BetaFeature") && 
+                    allowedRoles?.Contains(user.Role.ToString()) == true;
+                Console.WriteLine($"\nUser {user.Name} ({user.Role}) can access BetaFeature: {canAccessBeta}");
+            }
 
             Console.WriteLine("\n--- Audit Log is batched and offloaded (see debug output) ---");
             await Task.Delay(2000); // Allow audit logger to flush

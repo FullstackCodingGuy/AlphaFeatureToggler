@@ -39,3 +39,4 @@
 ### 📦 Distribution
 - NuGet package is built and attached to GitHub Releases via CI workflow.
 - Build, test, and pack status badge included in `README.md`.
+- **License:** Apache License 2.0 (see LICENSE file and NuGet metadata).

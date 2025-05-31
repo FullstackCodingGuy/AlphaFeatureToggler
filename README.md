@@ -12,28 +12,30 @@ A feature toggle for every application.
 1. **Feature Flag CRUD (Create, Read, Update, Delete)**
    - Web UI and API for managing feature flags.
    - Ability to organize flags by project/application/environment.
-
-2. **Targeting & Segmentation**
+2. **Feature Attributes**
+   - Attach custom metadata (e.g., rollout %, allowed roles, expiration) to each feature flag for advanced scenarios.
+3. **Targeting & Segmentation**
    - Enable/disable flags for specific users, groups, or attributes (e.g., by user ID, role, region).
    - Support for percentage-based rollouts (e.g., enable for 10% of users).
+   - Feature-specific attributes for fine-grained control (e.g., minimum user tier, expiration dates).
 
-3. **Multi-Environment Support**
+4. **Multi-Environment Support**
    - Separate configuration for dev, staging, and production.
    - Promote flag values/settings between environments.
 
-4. **Audit Logging & Change History**
+5. **Audit Logging & Change History**
    - Track who changed what and when for compliance and debugging.
 
-5. **Instant Flag Updates**
+6. **Instant Flag Updates**
    - Real-time (or near real-time) flag changes that take effect across services without redeploy.
 
-6. **SDK/API Integration**
+7. **SDK/API Integration**
    - SDKs or REST API endpoints for your apps/services to evaluate flags dynamically.
 
-7. **User Access Controls**
+8. **User Access Controls**
    - Basic roles/permissions (e.g., admin, editor, viewer) for flag management.
 
-8. **Flag Status & Kill Switch**
+9. **Flag Status & Kill Switch**
    - Easy way to view all current flag statuses and instantly disable (kill switch) a flag across the system.
 
 ---
@@ -84,6 +86,7 @@ A feature toggle for every application.
 | Feature                      | Priority    | Supported by MS Feature Mgmt | Custom Implementation Needed |
 |------------------------------|-------------|------------------------------|-----------------------------|
 | Feature Flag CRUD            | Primary     | ✔️                           | Minimal                     |
+| Feature Attributes           | Primary     | ❌                           | Yes                         |
 | Targeting/Segmentation       | Primary     | ✔️ (basic)                   | For advanced rules          |
 | Multi-Environment            | Primary     | ✔️                           | Minimal                     |
 | Audit Logging                | Primary     | ❌                           | Yes                         |
@@ -174,3 +177,41 @@ This project plan focuses on building a user-friendly, auditable, and safe featu
 - 🟢 Complete
 
 ---
+
+## 📝 Feature Attributes Example
+
+You can define features with attributes in your DI setup:
+
+```csharp
+services.AddAlphaFeatureToggler(opt => {
+    opt.Features = new List<FeatureConfig>
+    {
+        new FeatureConfig {
+            Name = "PremiumFeature",
+            Enabled = true,
+            Attributes = new Dictionary<string, object> {
+                { "MinimumUserTier", "Premium" },
+                { "RolloutPercentage", 25 }
+            }
+        },
+        new FeatureConfig {
+            Name = "BetaFeature",
+            Enabled = true,
+            Attributes = new Dictionary<string, object> {
+                { "AllowedRoles", new[] { "Admin", "Developer" } },
+                { "ExpirationDate", "2024-12-31" }
+            }
+        }
+    };
+});
+```
+
+Retrieve and use attributes at runtime:
+
+```csharp
+var attrs = toggler.GetFeatureAttributes("PremiumFeature");
+if (attrs?["MinimumUserTier"] as string == "Premium")
+{
+    // Enable premium feature for this user
+}
+```

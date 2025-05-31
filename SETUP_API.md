@@ -38,6 +38,7 @@
 ## Features & Integrations
 
 - **Feature Toggling**: Per environment, user, or role.
+- **Feature Attributes**: Custom metadata for feature configuration.
 - **Kill Switch**: Instantly disable features for safety.
 - **Audit Logging**: Batched, offloaded, and extensible.
 - **Change Propagation**: Real-time cache invalidation.
@@ -94,6 +95,48 @@ bool canAccess = await toggler.IsEnabledAsync("AdvancedReporting");
 - The package is built, tested, and published via GitHub Actions.
 - See the status badge in `README.md`.
 - Release notes and changelog are maintained in `CHANGELOG.md`.
+
+---
+
+## Feature Attributes
+
+Features can be configured with custom attributes during initialization or runtime:
+
+```csharp
+services.AddAlphaFeatureToggler(opt => {
+    opt.Features = new List<FeatureConfig>
+    {
+        new FeatureConfig 
+        { 
+            Name = "PremiumFeature",
+            Enabled = true,
+            Attributes = new Dictionary<string, object>
+            {
+                { "MinimumUserTier", "Premium" },
+                { "RolloutPercentage", 25 }
+            }
+        }
+    };
+});
+```
+
+Retrieve and use attributes at runtime:
+
+```csharp
+var attrs = toggler.GetFeatureAttributes("PremiumFeature");
+if (attrs?["MinimumUserTier"] as string == "Premium" && 
+    user.Tier == "Premium")
+{
+    // Enable premium feature
+}
+```
+
+Common attribute use cases:
+- User tiers and roles
+- Rollout percentages
+- Expiration dates
+- A/B testing variants
+- Feature dependencies
 
 ---
 

@@ -104,5 +104,13 @@ namespace AlphaFeatureToggler.Core
             if (_options.EnableCaching && _cache is MemoryCache memCache)
                 memCache.Compact(1.0); // Remove all entries
         }
+
+        // New: Get feature attributes
+        public Dictionary<string, object>? GetFeatureAttributes(string featureName)
+        {
+            if (_featureManager is Integration.InMemoryFeatureManager mgr)
+                return mgr.GetAttributes(featureName);
+            return null;
+        }
     }
 }
