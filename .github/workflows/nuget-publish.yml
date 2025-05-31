@@ -30,12 +30,27 @@ jobs:
           major_pattern: "BREAKING CHANGE:"
           minor_pattern: "feat:"
           version_format: "${major}.${minor}.${patch}"
-          
+
+      - name: Check if version already exists on NuGet.org
+        id: check-nuget
+        run: |
+          version="${{ steps.version-bump.outputs.version }}"
+          package="AlphaFeatureToggler"
+          exists=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://api.nuget.org/v3-flatcontainer/${package,,}/${version}/${package,,}.${version}.nupkg")
+
+          if [ "$exists" == "200" ]; then
+            echo "Version $version already exists on NuGet.org"
+            exit 1
+          else
+            echo "Version $version does not exist. Proceeding..."
+          fi
+
       - name: Update version in .csproj
         run: |
           version="${{ steps.version-bump.outputs.version }}"
           sed -i "s|<Version>.*</Version>|<Version>$version</Version>|" src/AlphaFeatureToggler/AlphaFeatureToggler.csproj
-          
+
       - name: Update CHANGELOG.md
         run: |
           version="${{ steps.version-bump.outputs.version }}"
