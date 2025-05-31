@@ -1,6 +1,7 @@
 ﻿using AlphaFeatureToggler.Core;
 using AlphaFeatureToggler.Integration;
 using System.Diagnostics;
+using Moq;
 
 namespace AlphaFeatureToggler.Tests
 {
@@ -11,13 +12,17 @@ namespace AlphaFeatureToggler.Tests
         [InlineData(true)]
         public async Task IsEnabledAsync_Performance_WithAndWithoutCaching(bool enableCaching)
         {
-            var featureManager = new FastFakeFeatureManager(true);
+            var featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
+            featureManagerMock.Setup(m => m.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.IsEnabledAsync<object>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.GetFeatureNamesAsync()).Returns(GetEmptyNames());
+
             var service = new FeatureToggleService(
-                featureManager,
-                new InMemoryFeatureAuditLogger(),
-                new InMemoryFeatureChangePropagator(),
-                new InMemoryFeaturePromotionWorkflow(),
-                new InMemoryFeatureApiIntegration(),
+                featureManagerMock.Object,
+                Mock.Of<IFeatureAuditLogger>(),
+                Mock.Of<IFeatureChangePropagator>(),
+                Mock.Of<IFeaturePromotionWorkflow>(),
+                Mock.Of<IFeatureApiIntegration>(),
                 Microsoft.Extensions.Options.Options.Create(new FeatureToggleServiceOptions
                 {
                     Environment = FeatureEnvironment.Production,
@@ -34,15 +39,7 @@ namespace AlphaFeatureToggler.Tests
             Assert.True(sw.ElapsedMilliseconds < (enableCaching ? 100 : 2000)); // Caching should be much faster
         }
 
-        private class FastFakeFeatureManager : Microsoft.FeatureManagement.IFeatureManager
-        {
-            private readonly bool _isEnabled;
-            public FastFakeFeatureManager(bool isEnabled) => _isEnabled = isEnabled;
-            public Task<bool> IsEnabledAsync(string feature) => Task.FromResult(_isEnabled);
-            public IAsyncEnumerable<string> GetFeatureNamesAsync() => GetNames();
-            public Task<bool> IsEnabledAsync<TContext>(string feature, TContext context) => Task.FromResult(_isEnabled);
-            private async IAsyncEnumerable<string> GetNames() { yield break; }
-        }
+        private static async IAsyncEnumerable<string> GetEmptyNames() { await Task.Yield(); yield break; }
     }
 
     public class FeatureToggleServiceTests
@@ -50,14 +47,17 @@ namespace AlphaFeatureToggler.Tests
         [Fact]
         public async Task IsEnabledAsync_ReturnsFalse_WhenFeatureIsNotEnabled()
         {
-            // Arrange
-            var featureManager = new FakeFeatureManager(false);
+            var featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
+            featureManagerMock.Setup(m => m.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(false);
+            featureManagerMock.Setup(m => m.IsEnabledAsync<object>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(false);
+            featureManagerMock.Setup(m => m.GetFeatureNamesAsync()).Returns(GetEmptyNames());
+
             var service = new FeatureToggleService(
-                featureManager,
-                new InMemoryFeatureAuditLogger(),
-                new InMemoryFeatureChangePropagator(),
-                new InMemoryFeaturePromotionWorkflow(),
-                new InMemoryFeatureApiIntegration(),
+                featureManagerMock.Object,
+                Mock.Of<IFeatureAuditLogger>(),
+                Mock.Of<IFeatureChangePropagator>(),
+                Mock.Of<IFeaturePromotionWorkflow>(),
+                Mock.Of<IFeatureApiIntegration>(),
                 Microsoft.Extensions.Options.Options.Create(new FeatureToggleServiceOptions { Environment = FeatureEnvironment.Development })
             );
 
@@ -71,14 +71,17 @@ namespace AlphaFeatureToggler.Tests
         [Fact]
         public async Task IsEnabledAsync_ReturnsTrue_WhenFeatureIsEnabled_AndNoKillSwitch()
         {
-            // Arrange
-            var featureManager = new FakeFeatureManager(true);
+            var featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
+            featureManagerMock.Setup(m => m.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.IsEnabledAsync<object>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.GetFeatureNamesAsync()).Returns(GetEmptyNames());
+
             var service = new FeatureToggleService(
-                featureManager,
-                new InMemoryFeatureAuditLogger(),
-                new InMemoryFeatureChangePropagator(),
-                new InMemoryFeaturePromotionWorkflow(),
-                new InMemoryFeatureApiIntegration(),
+                featureManagerMock.Object,
+                Mock.Of<IFeatureAuditLogger>(),
+                Mock.Of<IFeatureChangePropagator>(),
+                Mock.Of<IFeaturePromotionWorkflow>(),
+                Mock.Of<IFeatureApiIntegration>(),
                 Microsoft.Extensions.Options.Options.Create(new FeatureToggleServiceOptions { Environment = FeatureEnvironment.Production })
             );
 
@@ -92,14 +95,17 @@ namespace AlphaFeatureToggler.Tests
         [Fact]
         public async Task IsEnabledAsync_ReturnsFalse_WhenKillSwitchActive()
         {
-            // Arrange
-            var featureManager = new FakeFeatureManager(true);
+            var featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
+            featureManagerMock.Setup(m => m.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.IsEnabledAsync<object>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.GetFeatureNamesAsync()).Returns(GetEmptyNames());
+
             var service = new FeatureToggleService(
-                featureManager,
-                new InMemoryFeatureAuditLogger(),
-                new InMemoryFeatureChangePropagator(),
-                new InMemoryFeaturePromotionWorkflow(),
-                new InMemoryFeatureApiIntegration(),
+                featureManagerMock.Object,
+                Mock.Of<IFeatureAuditLogger>(),
+                Mock.Of<IFeatureChangePropagator>(),
+                Mock.Of<IFeaturePromotionWorkflow>(),
+                Mock.Of<IFeatureApiIntegration>(),
                 Microsoft.Extensions.Options.Options.Create(new FeatureToggleServiceOptions { Environment = FeatureEnvironment.Staging })
             );
             await service.ActivateKillSwitchAsync("TestFeature", FeatureEnvironment.Staging, "reason", "user");
@@ -114,14 +120,17 @@ namespace AlphaFeatureToggler.Tests
         [Fact]
         public async Task KillSwitch_ActivateAndDeactivate_WorksCorrectly()
         {
-            // Arrange
-            var featureManager = new FakeFeatureManager(true);
+            var featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
+            featureManagerMock.Setup(m => m.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.IsEnabledAsync<object>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(true);
+            featureManagerMock.Setup(m => m.GetFeatureNamesAsync()).Returns(GetEmptyNames());
+
             var service = new FeatureToggleService(
-                featureManager,
-                new InMemoryFeatureAuditLogger(),
-                new InMemoryFeatureChangePropagator(),
-                new InMemoryFeaturePromotionWorkflow(),
-                new InMemoryFeatureApiIntegration(),
+                featureManagerMock.Object,
+                Mock.Of<IFeatureAuditLogger>(),
+                Mock.Of<IFeatureChangePropagator>(),
+                Mock.Of<IFeaturePromotionWorkflow>(),
+                Mock.Of<IFeatureApiIntegration>(),
                 Microsoft.Extensions.Options.Options.Create(new FeatureToggleServiceOptions { Environment = FeatureEnvironment.Testing })
             );
             await service.ActivateKillSwitchAsync("TestFeature", FeatureEnvironment.Testing, "reason", "user");
@@ -135,13 +144,18 @@ namespace AlphaFeatureToggler.Tests
         [Fact]
         public async Task ClearFeatureCache_PropagatesChange()
         {
-            var featureManager = new FakeFeatureManager(true);
+            var featureManagerMock = new Mock<Microsoft.FeatureManagement.IFeatureManager>();
+            var enabled = true;
+            featureManagerMock.Setup(m => m.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(() => enabled);
+            featureManagerMock.Setup(m => m.IsEnabledAsync<object>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(() => enabled);
+            featureManagerMock.Setup(m => m.GetFeatureNamesAsync()).Returns(GetEmptyNames());
+
             var service = new FeatureToggleService(
-                featureManager,
-                new InMemoryFeatureAuditLogger(),
-                new InMemoryFeatureChangePropagator(),
-                new InMemoryFeaturePromotionWorkflow(),
-                new InMemoryFeatureApiIntegration(),
+                featureManagerMock.Object,
+                Mock.Of<IFeatureAuditLogger>(),
+                Mock.Of<IFeatureChangePropagator>(),
+                Mock.Of<IFeaturePromotionWorkflow>(),
+                Mock.Of<IFeatureApiIntegration>(),
                 Microsoft.Extensions.Options.Options.Create(new FeatureToggleServiceOptions
                 {
                     Environment = FeatureEnvironment.Production,
@@ -152,7 +166,7 @@ namespace AlphaFeatureToggler.Tests
             // Prime cache with true
             Assert.True(await service.IsEnabledAsync("CachePropTest"));
             // Simulate feature flag change
-            featureManager.SetEnabled(false);
+            enabled = false;
             // Should still be true due to cache
             Assert.True(await service.IsEnabledAsync("CachePropTest"));
             // Clear cache and check again
@@ -160,15 +174,6 @@ namespace AlphaFeatureToggler.Tests
             Assert.False(await service.IsEnabledAsync("CachePropTest"));
         }
 
-        public class FakeFeatureManager : Microsoft.FeatureManagement.IFeatureManager
-        {
-            private bool _isEnabled;
-            public FakeFeatureManager(bool isEnabled) => _isEnabled = isEnabled;
-            public void SetEnabled(bool enabled) => _isEnabled = enabled;
-            public Task<bool> IsEnabledAsync(string feature) => Task.FromResult(_isEnabled);
-            public IAsyncEnumerable<string> GetFeatureNamesAsync() => GetNames();
-            public Task<bool> IsEnabledAsync<TContext>(string feature, TContext context) => Task.FromResult(_isEnabled);
-            private async IAsyncEnumerable<string> GetNames() { yield break; }
-        }
+        private static async IAsyncEnumerable<string> GetEmptyNames() { await Task.Yield(); yield break; }
     }
 }
