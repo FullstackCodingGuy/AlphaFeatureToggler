@@ -97,4 +97,77 @@ A feature toggle for every application.
 
 ---
 
-### 👉 **Focus first on user-friendly flag management, targeting, auditability, and safe rollout. Add advanced features as your needs mature!**
+
+
+
+# 🚩 Feature Flag Management Core Capabilities – Project Plan
+
+This project plan focuses on building a user-friendly, auditable, and safe feature flag management system, using Microsoft Feature Management as the backend (or a similar provider).
+
+---
+
+## Project Overview
+
+| Area                | Description                                                                                 | Status        | Owner   | Notes                       |
+|---------------------|--------------------------------------------------------------------------------------------|--------------|---------|-----------------------------|
+| UI/UX               | Feature flag dashboard for CRUD, search, filter, and flag details                          | ⬜ Not Started|         | Wireframes needed           |
+| API                 | REST API for programmatic flag management                                                  | ⬜ Not Started|         | Define endpoints            |
+| Targeting           | Enable/disable flags globally, by environment, user, group, or percentage                  | ⬜ Not Started|         | Percentage rollout logic    |
+| Audit Logging       | Full change history: who, what, when for all flag edits                                    | ⬜ Not Started|         | Choose log storage          |
+| Access Control      | RBAC: admin, editor, viewer roles for managing flags                                       | ⬜ Not Started|         | Integrate with auth system  |
+| Change Propagation  | Instant/near-real-time rollout of flag changes across services                             | ⬜ Not Started|         | Use Azure AppConfig, polling|
+| Kill Switch         | Instantly disable any flag across all environments                                         | ⬜ Not Started|         | UI button + API endpoint    |
+| Promotion Workflow  | Safely promote flag settings between environments (dev → staging → prod)                   | ⬜ Not Started|         | Approval step optional      |
+| Documentation       | Inline flag descriptions, owner, tags for each flag                                        | ⬜ Not Started|         | UI fields + API support     |
+| Testing             | Unit/integration tests for CRUD, targeting, kill switch, and audit logging                 | ⬜ Not Started|         | CI/CD coverage              |
+
+---
+
+## Milestones
+
+### 1. **Initial Setup**
+- [ ] Project repo, dev environment, and CI/CD pipeline
+- [ ] Integrate Microsoft Feature Management backend
+
+### 2. **Feature Flag Management UI & API**
+- [ ] Design and implement dashboard
+- [ ] Implement REST API for flags
+- [ ] Add metadata (descriptions, owners, tags)
+
+### 3. **Targeting & Segmentation**
+- [ ] Global and environment-based toggling
+- [ ] User/group/role-based targeting
+- [ ] Percentage rollout (canary releases)
+
+### 4. **Auditability**
+- [ ] Change log schema and storage
+- [ ] Display flag change history in UI
+- [ ] Export/download audit logs
+
+### 5. **Access Control**
+- [ ] Role-based access (admin, editor, viewer)
+- [ ] Integrate with authentication system
+
+### 6. **Safe Rollout Features**
+- [ ] Real-time/instant flag update propagation
+- [ ] Implement kill switch (UI + API)
+- [ ] Promotion workflow (move flags between environments)
+
+### 7. **Testing & Validation**
+- [ ] Unit tests for all components
+- [ ] Integration tests for API/UI/propagation
+- [ ] User acceptance testing
+
+### 8. **Documentation & Training**
+- [ ] User guide and onboarding docs
+- [ ] Inline help and flag documentation
+
+---
+
+## Status Key
+
+- ⬜ Not Started
+- 🟡 In Progress
+- 🟢 Complete
+
+---
