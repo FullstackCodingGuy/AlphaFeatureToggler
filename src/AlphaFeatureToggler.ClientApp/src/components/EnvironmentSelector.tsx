@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +10,7 @@ interface EnvironmentSelectorProps {
 const EnvironmentSelector: React.FC<EnvironmentSelectorProps> = ({ selected, onSelect }) => {
   const environments = [
     { value: 'development', label: 'Development', color: 'bg-blue-100 text-blue-800' },
+    { value: 'testing', label: 'Testing', color: 'bg-amber-100 text-amber-800' },
     { value: 'staging', label: 'Staging', color: 'bg-amber-100 text-amber-800' },
     { value: 'production', label: 'Production', color: 'bg-emerald-100 text-emerald-800' }
   ];
@@ -18,24 +18,20 @@ const EnvironmentSelector: React.FC<EnvironmentSelectorProps> = ({ selected, onS
   const selectedEnv = environments.find(env => env.value === selected);
 
   return (
-    <div className="flex items-center space-x-2">
-      <span className="text-sm font-medium text-slate-600">Environment:</span>
+    <div className="flex flex-col items-start w-full sm:w-auto">
+      <label className="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+        Environment
+      </label>
       <Select value={selected} onValueChange={onSelect}>
-        <SelectTrigger className="w-40 bg-white/70 border-slate-200">
+        <SelectTrigger className="w-52 bg-white/70 border-slate-200">
           <SelectValue>
-            {selectedEnv && (
-              <Badge className={selectedEnv.color}>
-                {selectedEnv.label}
-              </Badge>
-            )}
+            {selectedEnv ? selectedEnv.label : 'Select Environment'}
           </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
           {environments.map((env) => (
             <SelectItem key={env.value} value={env.value}>
-              <Badge className={env.color}>
-                {env.label}
-              </Badge>
+              {env.label}
             </SelectItem>
           ))}
         </SelectContent>

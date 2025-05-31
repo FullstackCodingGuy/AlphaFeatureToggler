@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -20,19 +19,26 @@ const ApplicationSelector: React.FC<ApplicationSelectorProps> = ({ selected, onS
   const selectedApp = applications.find(app => app.value === selected);
 
   return (
-    <div className="flex items-center space-x-2">
-      <Building className="h-4 w-4 text-slate-600" />
-      <span className="text-sm font-medium text-slate-600">Application:</span>
+    <div className="flex flex-col items-start w-full sm:w-auto">
+      <label className="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+        <span className="inline-block">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+            <path d="M3 21V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="7" y="9" width="10" height="6" rx="1" stroke="#64748b" strokeWidth="1.5"/>
+          </svg>
+        </span>
+        Application
+      </label>
       <Select value={selected} onValueChange={onSelect}>
-        <SelectTrigger className="w-48 bg-white/70 border-slate-200">
+        <SelectTrigger className="w-52 bg-white/70 border-slate-200">
           <SelectValue>
             {selectedApp && (
               <div className="flex items-center space-x-2">
                 <Globe className="h-4 w-4" />
                 <span>{selectedApp.label}</span>
-                <Badge variant="outline" className={selectedApp.color}>
+                {/* <Badge variant="outline" className={selectedApp.color}>
                   {selectedApp.type}
-                </Badge>
+                </Badge> */}
               </div>
             )}
           </SelectValue>

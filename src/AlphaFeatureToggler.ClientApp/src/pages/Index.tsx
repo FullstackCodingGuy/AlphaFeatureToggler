@@ -172,23 +172,29 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Bottom Row: Controls */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-2">
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 flex-1">
-              <TenantSelector 
-                selected={selectedTenant}
-                onSelect={setSelectedTenant}
-              />
-              <ApplicationSelector 
-                selected={selectedApplication}
-                onSelect={setSelectedApplication}
-              />
-              <EnvironmentSelector 
-                selected={selectedEnvironment}
-                onSelect={setSelectedEnvironment}
-              />
+          {/* Bottom Row: Controls - Enhanced layout with label on top, control at bottom */}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              {/* Organization Selector */}
+              <div className="flex flex-col items-start w-full sm:w-auto">
+                <div className="w-full">
+                  <TenantSelector selected={selectedTenant} onSelect={setSelectedTenant} />
+                </div>
+              </div>
+              {/* Application Selector */}
+              <div className="flex flex-col items-start w-full sm:w-auto">
+                <div className="w-full">
+                  <ApplicationSelector selected={selectedApplication} onSelect={setSelectedApplication} />
+                </div>
+              </div>
+              {/* Environment Selector */}
+              <div className="flex flex-col items-start w-full sm:w-auto">
+                <div className="w-full">
+                  <EnvironmentSelector selected={selectedEnvironment} onSelect={setSelectedEnvironment} />
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch md:items-center mt-2 md:mt-0">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch md:items-end mt-2 md:mt-0">
               <Button 
                 onClick={() => setIsCreateModalOpen(true)}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"

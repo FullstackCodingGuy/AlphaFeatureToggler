@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -20,9 +19,11 @@ const TenantSelector: React.FC<TenantSelectorProps> = ({ selected, onSelect }) =
   const selectedTenant = tenants.find(tenant => tenant.value === selected);
 
   return (
-    <div className="flex items-center space-x-2">
-      <Building2 className="h-4 w-4 text-slate-600" />
-      <span className="text-sm font-medium text-slate-600">Organization:</span>
+    <div className="flex flex-col items-start w-full sm:w-auto">
+      <label className="flex items-center gap-1 text-sm font-semibold text-slate-700 mb-1">
+        <Building2 className="h-4 w-4 text-slate-600" />
+        Organization
+      </label>
       <Select value={selected} onValueChange={onSelect}>
         <SelectTrigger className="w-52 bg-white/70 border-slate-200">
           <SelectValue>
@@ -30,9 +31,9 @@ const TenantSelector: React.FC<TenantSelectorProps> = ({ selected, onSelect }) =
               <div className="flex items-center space-x-2">
                 <Crown className="h-4 w-4" />
                 <span className="truncate">{selectedTenant.label}</span>
-                <Badge variant="outline" className={selectedTenant.color}>
+                {/* <Badge variant="outline" className={selectedTenant.color}>
                   {selectedTenant.plan}
-                </Badge>
+                </Badge> */}
               </div>
             )}
           </SelectValue>
