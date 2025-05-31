@@ -1,202 +1,100 @@
-# AlphaFeatureToggler Setup Guide for API Solutions
+# AlphaFeatureToggler Setup & API Guide
 
-This guide explains how to integrate the AlphaFeatureToggler library into a new .NET API solution, including code snippets, demo data, caching options, and how to leverage audit logging for feature flag changes.
+## Quick Start
+
+1. **Install the NuGet package**
+   - Add `AlphaFeatureToggler` to your project via NuGet.
+
+2. **Add to Dependency Injection**
+   - In your `Program.cs` or startup:
+     ```csharp
+     services.AddAlphaFeatureToggler(opt => {
+         opt.Environment = FeatureEnvironment.Development; // or Staging/Production
+         opt.EnableCaching = true; // optional, default is false
+         opt.FeatureCacheSeconds = 10; // optional, cache duration in seconds
+     });
+     ```
+   - This registers all required services, in-memory/demo implementations, and the DI extension method. No manual registrations needed.
+
+3. **Get the Feature Toggle Service**
+   - Inject or resolve `IFeatureToggleService`:
+     ```csharp
+     var toggler = provider.GetRequiredService<IFeatureToggleService>();
+     ```
+
+4. **Set and Check Feature Flags**
+   - Use the in-memory feature manager for demo/testing:
+     ```csharp
+     var featureManager = provider.GetRequiredService<Microsoft.FeatureManagement.IFeatureManager>();
+     featureManager.SetFeature("MyFeature", true);
+     bool enabled = await toggler.IsEnabledAsync("MyFeature");
+     ```
+
+5. **Kill Switch, Audit, and Propagation**
+   - Use `ActivateKillSwitchAsync`, `DeactivateKillSwitchAsync`, and `ClearFeatureCache` for enterprise scenarios.
 
 ---
 
-## 1. Install the NuGet Package
+## Features & Integrations
 
-Add the AlphaFeatureToggler library to your API project:
-
-```bash
-# Replace <version> with the latest version if published
- dotnet add package AlphaFeatureToggler
-```
-
-If using a local project reference:
-
-```bash
-dotnet add reference ../AlphaFeatureToggler/AlphaFeatureToggler.csproj
-```
+- **Feature Toggling**: Per environment, user, or role.
+- **Kill Switch**: Instantly disable features for safety.
+- **Audit Logging**: Batched, offloaded, and extensible.
+- **Change Propagation**: Real-time cache invalidation.
+- **Promotion Workflow**: Safe flag promotion between environments.
+- **API Integration**: Extensible points for external systems.
+- **Access Control**: Role/user-based access.
+- **Caching**: Optional, thread-safe, and configurable.
+- **In-Memory Implementations**: For demo/testing, easily swappable for production.
 
 ---
 
-## 2. Register Services in Dependency Injection
+## Extending for Production
 
-In your `Program.cs` or `Startup.cs`, register the required services:
+- Replace in-memory implementations with your own (e.g., Redis, SQL, distributed cache, external audit loggers).
+- Implement interfaces: `IFeatureAuditLogger`, `IFeatureChangePropagator`, `IFeaturePromotionWorkflow`, `IFeatureApiIntegration`.
+- Register your implementations before calling `AddAlphaFeatureToggler`.
+
+---
+
+## Example: Console App Integration
+
+See [`src/AlphaFeatureToggler.ConsoleDemo/Program.cs`](src/AlphaFeatureToggler.ConsoleDemo/Program.cs) for a complete, realistic usage example demonstrating all enterprise scenarios:
 
 ```csharp
-using AlphaFeatureToggler.Core;
-using AlphaFeatureToggler.Integration;
-using Microsoft.FeatureManagement;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add Microsoft.FeatureManagement
-builder.Services.AddFeatureManagement();
-
-// Register AlphaFeatureToggler services
-// builder.Services.AddSingleton<IFeatureAuditLogger, InMemoryFeatureAuditLogger>();
-builder.Services.AddSingleton<IFeatureAuditLogger>(_ => new BatchingFeatureAuditLogger(batchSize: 20, intervalMs: 2000));
-builder.Services.AddSingleton<IFeatureChangePropagator, InMemoryFeatureChangePropagator>();
-builder.Services.AddSingleton<IFeaturePromotionWorkflow, InMemoryFeaturePromotionWorkflow>();
-builder.Services.AddSingleton<IFeatureApiIntegration, InMemoryFeatureApiIntegration>();
-builder.Services.AddSingleton<IFeatureToggleService, FeatureToggleService>();
-
-// Register options for environment and caching (optional, defaults shown below)
-builder.Services.Configure<FeatureToggleServiceOptions>(options =>
-{
-    options.Environment = builder.Environment.IsDevelopment()
-        ? FeatureEnvironment.Development
-        : FeatureEnvironment.Production;
-    options.EnableCaching = true; // Set to true to enable caching
-    options.FeatureCacheSeconds = 60; // Set cache duration in seconds
+var services = new ServiceCollection();
+services.AddAlphaFeatureToggler(opt => {
+    opt.Environment = FeatureEnvironment.Production;
+    opt.EnableCaching = true;
+    opt.FeatureCacheSeconds = 30;
 });
+var provider = services.BuildServiceProvider();
+var toggler = provider.GetRequiredService<IFeatureToggleService>();
+var featureManager = provider.GetRequiredService<Microsoft.FeatureManagement.IFeatureManager>();
 
-var app = builder.Build();
-// ...existing code...
-app.Run();
+featureManager.SetFeature("AdvancedReporting", true);
+bool canAccess = await toggler.IsEnabledAsync("AdvancedReporting");
 ```
 
----
-
-## 3. Add Feature Flags to Configuration
-
-Add demo feature flags to your `appsettings.json`:
-
-```json
-{
-  "FeatureManagement": {
-    "DemoFeature": true,
-    "BetaFeature": false
-  }
-}
-```
+> **See the full demo in [`src/AlphaFeatureToggler.ConsoleDemo/Program.cs`](src/AlphaFeatureToggler.ConsoleDemo/Program.cs) for advanced scenarios: user/role access, enable/disable, kill switch, caching, change propagation, and audit logging.
 
 ---
 
-## 4. Use the Feature Toggle Service in Controllers
+## Performance & Best Practices
 
-Example controller usage:
-
-```csharp
-using AlphaFeatureToggler.Core;
-using Microsoft.AspNetCore.Mvc;
-
-[ApiController]
-[Route("api/[controller]")]
-public class DemoController : ControllerBase
-{
-    private readonly IFeatureToggleService _featureToggleService;
-
-    public DemoController(IFeatureToggleService featureToggleService)
-    {
-        _featureToggleService = featureToggleService;
-    }
-
-    [HttpGet("demo")]
-    public async Task<IActionResult> GetDemo()
-    {
-        bool enabled = await _featureToggleService.IsEnabledAsync("DemoFeature"); // Uses default environment
-        if (!enabled)
-            return Forbid();
-        return Ok("Demo feature is enabled!");
-    }
-}
-```
+- Enable caching for high-throughput scenarios.
+- Use `ClearFeatureCache` after flag changes for instant propagation.
+- Use the audit log for compliance and debugging.
+- For distributed scenarios, implement a distributed cache and change propagator.
 
 ---
 
-## 5. Leveraging Audit Logging
+## CI/CD & NuGet
 
-The `IFeatureAuditLogger` interface allows you to capture and persist audit events for feature flag changes, such as toggling a feature or activating a kill switch. By default, the sample uses `InMemoryFeatureAuditLogger`, but you can implement your own logger to store audit logs in a database, file, or external system.
-
-### Example: Custom Audit Logger
-
-```csharp
-using AlphaFeatureToggler.Core;
-using System.Threading.Tasks;
-using System.Diagnostics;
-
-public class ConsoleAuditLogger : IFeatureAuditLogger
-{
-    public Task LogAsync(FeatureAuditLog logEntry)
-    {
-        Debug.WriteLine($"[AUDIT] {logEntry.Timestamp:u} | {logEntry.Environment} | {logEntry.FeatureName} | {logEntry.Action} | {logEntry.UserId} | {logEntry.Details}");
-        return Task.CompletedTask;
-    }
-}
-```
-
-Register your custom logger in `Program.cs`:
-
-```csharp
-builder.Services.AddSingleton<IFeatureAuditLogger, ConsoleAuditLogger>();
-```
-
-Whenever a feature is toggled or a kill switch is activated/deactivated, the logger will be called automatically by the `FeatureToggleService`:
-
-```csharp
-await _auditLogger.LogAsync(new FeatureAuditLog
-{
-    FeatureName = featureName,
-    Environment = environment,
-    Action = "KillSwitchActivated",
-    UserId = userId,
-    Details = reason,
-    Timestamp = System.DateTime.UtcNow
-});
-```
-
-You can extend this to log to a database, send notifications, or integrate with monitoring tools.
+- The package is built, tested, and published via GitHub Actions.
+- See the status badge in `README.md`.
+- Release notes and changelog are maintained in `CHANGELOG.md`.
 
 ---
 
-## 6. Caching Feature Flag Results
-
-- **How to enable caching:**
-  - Set `EnableCaching = true` in `FeatureToggleServiceOptions` (see DI setup above).
-- **How to configure cache duration:**
-  - Set `FeatureCacheSeconds` in `FeatureToggleServiceOptions`.
-- **How to clear/propagate cache changes:**
-  - Call `ClearFeatureCache()` on the `FeatureToggleService` instance after a configuration or flag change to invalidate the cache.
-
----
-
-## 7. Demo Data for Testing
-
-- **Feature Flags:**
-  - `DemoFeature`: Enabled
-  - `BetaFeature`: Disabled
-- **Environments:**
-  - `Development`, `Testing`, `Staging`, `Production`
-- **Audit Logging:**
-  - In-memory logger logs actions (extend for persistent storage)
-
----
-
-## 8. Extending
-
-Implement your own versions of the interfaces in `AlphaFeatureToggler.Core` for production scenarios (e.g., database audit logging, distributed change propagation).
-
----
-
-## 9. Running Unit Tests
-
-If you want to run the included tests:
-
-```bash
-dotnet test ../AlphaFeatureToggler.Tests/AlphaFeatureToggler.Tests.csproj
-```
-
----
-
-## 10. Performance Testing: Caching vs. No Caching
-
-The library includes performance tests to compare feature flag reads with and without caching. See `FeatureToggleServicePerformanceTests` in the test project for details.
-
----
-
-## 11. More Information
-
-See the main `README.md` for API reference and advanced scenarios.
+For more, see the source code and integration tests for advanced usage and extension points.
