@@ -1,4 +1,7 @@
 # AlphaFeatureToggler
+
+![Build, Test, and Publish NuGet Package](https://github.com/${{github.repository}}/actions/workflows/ci.yml/badge.svg?branch=main)
+
 A feature toggle for every application.
 
 
