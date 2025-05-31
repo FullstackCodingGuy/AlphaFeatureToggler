@@ -209,5 +209,24 @@ namespace AlphaFeatureToggler.Tests
             // Assuming deterministic hashing places "user1" within the 50% rollout.
             Assert.True(isEnabled);
         }
+
+
+        [Fact]
+        public async Task IsFeatureEnabledForUserAsync_ReturnsFalse_WhenGloballyDisabled()
+        {
+            // Arrange
+            _featureManager.SetFeature("TestFeature", true, new Dictionary<string, object>
+            {
+                { "Enabled", false }
+            });
+
+            var userContext = new AlphaFeatureToggler.Core.FeatureToggleService.UserContext { UserId = "user1" };
+
+            // Act
+            var isEnabled = await _service.IsFeatureEnabledForUserAsync("TestFeature", userContext);
+
+            // Assert
+            Assert.False(isEnabled);
+        }
     }
 }
