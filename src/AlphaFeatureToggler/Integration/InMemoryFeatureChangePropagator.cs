@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using AlphaFeatureToggler.Core;
 
 namespace AlphaFeatureToggler.Integration

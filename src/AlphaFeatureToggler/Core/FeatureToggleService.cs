@@ -1,15 +1,10 @@
-using System.Threading.Tasks;
 using Microsoft.FeatureManagement;
-using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AlphaFeatureToggler.Core
 {
-    public class FeatureToggleServiceOptions
-    {
-        public FeatureEnvironment Environment { get; set; } = FeatureEnvironment.Production;
-    }
 
     /// <summary>
     /// Implementation of the feature toggle service.
@@ -24,6 +19,7 @@ namespace AlphaFeatureToggler.Core
         private readonly FeatureToggleServiceOptions _options;
         private static readonly ConcurrentDictionary<(string, FeatureEnvironment), bool> _killSwitches = new();
         private static readonly ConcurrentDictionary<(string, FeatureEnvironment), HashSet<string>> _featureAccess = new();
+        private readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
         public FeatureToggleService(
             IFeatureManager featureManager,
@@ -44,10 +40,22 @@ namespace AlphaFeatureToggler.Core
         public async Task<bool> IsEnabledAsync(string featureName, FeatureEnvironment? environment = null)
         {
             var env = environment ?? _options.Environment;
-            // Access control: check if feature is allowed for this environment/user (demo: always allowed)
+            var cacheKey = $"feature:{featureName}:{env}";
+            if (_options.EnableCaching)
+            {
+                if (_cache.TryGetValue(cacheKey, out bool cached))
+                    return cached;
+            }
             if (await IsKillSwitchActiveAsync(featureName, env))
+            {
+                if (_options.EnableCaching)
+                    _cache.Set(cacheKey, false, TimeSpan.FromSeconds(_options.FeatureCacheSeconds));
                 return false;
-            return await _featureManager.IsEnabledAsync(featureName);
+            }
+            var enabled = await _featureManager.IsEnabledAsync(featureName);
+            if (_options.EnableCaching)
+                _cache.Set(cacheKey, enabled, TimeSpan.FromSeconds(_options.FeatureCacheSeconds));
+            return enabled;
         }
 
         public Task<bool> IsKillSwitchActiveAsync(string featureName, FeatureEnvironment? environment = null)
@@ -88,6 +96,13 @@ namespace AlphaFeatureToggler.Core
         public async Task PromoteFeatureAsync(string featureName, FeatureEnvironment fromEnv, FeatureEnvironment toEnv, string userId)
         {
             await _promotionWorkflow.RequestPromotionAsync(featureName, fromEnv, toEnv, userId);
+        }
+
+        // Call this method to clear the cache (e.g., after config change or flag update)
+        public void ClearFeatureCache()
+        {
+            if (_options.EnableCaching && _cache is MemoryCache memCache)
+                memCache.Compact(1.0); // Remove all entries
         }
     }
 }

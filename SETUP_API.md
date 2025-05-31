@@ -1,6 +1,6 @@
 # AlphaFeatureToggler Setup Guide for API Solutions
 
-This guide explains how to integrate the AlphaFeatureToggler library into a new .NET API solution, including code snippets, demo data, and how to leverage audit logging for feature flag changes.
+This guide explains how to integrate the AlphaFeatureToggler library into a new .NET API solution, including code snippets, demo data, caching options, and how to leverage audit logging for feature flag changes.
 
 ---
 
@@ -36,18 +36,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddFeatureManagement();
 
 // Register AlphaFeatureToggler services
-builder.Services.AddSingleton<IFeatureAuditLogger, InMemoryFeatureAuditLogger>();
+// builder.Services.AddSingleton<IFeatureAuditLogger, InMemoryFeatureAuditLogger>();
+builder.Services.AddSingleton<IFeatureAuditLogger>(_ => new BatchingFeatureAuditLogger(batchSize: 20, intervalMs: 2000));
 builder.Services.AddSingleton<IFeatureChangePropagator, InMemoryFeatureChangePropagator>();
 builder.Services.AddSingleton<IFeaturePromotionWorkflow, InMemoryFeaturePromotionWorkflow>();
 builder.Services.AddSingleton<IFeatureApiIntegration, InMemoryFeatureApiIntegration>();
 builder.Services.AddSingleton<IFeatureToggleService, FeatureToggleService>();
 
-// Register options for environment (optional, defaults to Production)
+// Register options for environment and caching (optional, defaults shown below)
 builder.Services.Configure<FeatureToggleServiceOptions>(options =>
 {
     options.Environment = builder.Environment.IsDevelopment()
         ? FeatureEnvironment.Development
         : FeatureEnvironment.Production;
+    options.EnableCaching = true; // Set to true to enable caching
+    options.FeatureCacheSeconds = 60; // Set cache duration in seconds
 });
 
 var app = builder.Build();
@@ -149,7 +152,18 @@ You can extend this to log to a database, send notifications, or integrate with 
 
 ---
 
-## 6. Demo Data for Testing
+## 6. Caching Feature Flag Results
+
+- **How to enable caching:**
+  - Set `EnableCaching = true` in `FeatureToggleServiceOptions` (see DI setup above).
+- **How to configure cache duration:**
+  - Set `FeatureCacheSeconds` in `FeatureToggleServiceOptions`.
+- **How to clear/propagate cache changes:**
+  - Call `ClearFeatureCache()` on the `FeatureToggleService` instance after a configuration or flag change to invalidate the cache.
+
+---
+
+## 7. Demo Data for Testing
 
 - **Feature Flags:**
   - `DemoFeature`: Enabled
@@ -161,13 +175,13 @@ You can extend this to log to a database, send notifications, or integrate with 
 
 ---
 
-## 7. Extending
+## 8. Extending
 
 Implement your own versions of the interfaces in `AlphaFeatureToggler.Core` for production scenarios (e.g., database audit logging, distributed change propagation).
 
 ---
 
-## 8. Running Unit Tests
+## 9. Running Unit Tests
 
 If you want to run the included tests:
 
@@ -177,6 +191,12 @@ dotnet test ../AlphaFeatureToggler.Tests/AlphaFeatureToggler.Tests.csproj
 
 ---
 
-## 9. More Information
+## 10. Performance Testing: Caching vs. No Caching
+
+The library includes performance tests to compare feature flag reads with and without caching. See `FeatureToggleServicePerformanceTests` in the test project for details.
+
+---
+
+## 11. More Information
 
 See the main `README.md` for API reference and advanced scenarios.

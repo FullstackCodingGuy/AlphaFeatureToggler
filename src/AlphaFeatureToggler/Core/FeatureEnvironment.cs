@@ -1,5 +1,3 @@
-using System;
-
 namespace AlphaFeatureToggler.Core
 {
     /// <summary>
