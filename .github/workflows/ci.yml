@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  release:
+    types: [published]
 
 jobs:
   build-test-pack:
@@ -35,3 +37,19 @@ jobs:
         with:
           name: nuget-package
           path: ./nupkg/*.nupkg
+
+  release-nuget:
+    needs: build-test-pack
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - name: Download NuGet package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./nupkg
+
+      - name: Upload NuGet package to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./nupkg/*.nupkg
