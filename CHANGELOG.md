@@ -1,3 +1,11 @@
+## [1.0.1] - 2025-05-31
+
+- Update AlphaFeatureToggler.csproj
+- release version fix
+- release-fix1
+- nuget fixes2
+- nuget changes
+
 # Changelog
 
 ## [1.0.0] - 2025-05-31
