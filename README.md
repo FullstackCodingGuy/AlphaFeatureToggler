@@ -1,9 +1,9 @@
 # AlphaFeatureToggler
 
-![Build, Test, and Publish NuGet Package](https://github.com/${{github.repository}}/actions/workflows/ci.yml/badge.svg?branch=main)
-
 A feature toggle for every application.
 
+
+[![Build, Test, and Publish NuGet Package](https://github.com/FullstackCodingGuy/AlphaFeatureToggler/actions/workflows/ci.yml/badge.svg)](https://github.com/FullstackCodingGuy/AlphaFeatureToggler/actions/workflows/ci.yml)
 
 ## 🛠️ Building Feature Management Tool (with Microsoft Feature Management as Backend)
 
