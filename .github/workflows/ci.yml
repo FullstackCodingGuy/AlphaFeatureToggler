@@ -1,0 +1,37 @@
+name: Build, Test, and Publish NuGet Package
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore AlphaFeatureToggler.sln
+
+      - name: Build
+        run: dotnet build AlphaFeatureToggler.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test AlphaFeatureToggler.sln --configuration Release --no-build --verbosity normal
+
+      - name: Pack NuGet package
+        run: dotnet pack src/AlphaFeatureToggler/AlphaFeatureToggler.csproj --configuration Release --no-build --output ./nupkg
+
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./nupkg/*.nupkg
