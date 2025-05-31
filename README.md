@@ -110,7 +110,7 @@ A feature toggle for every application.
 
 | Area                | Description                                                                                 | Status        | Owner   | Notes                       |
 |---------------------|--------------------------------------------------------------------------------------------|--------------|---------|-----------------------------|
-| UI/UX               | Feature flag dashboard for CRUD, search, filter, and flag details                          | ⬜ Not Started|         | Wireframes needed           |
+| UI/UX               | Feature flag dashboard for CRUD, search, filter, and flag details                          | 🟡 In Progress|         | Wireframes needed           |
 | API                 | REST API for programmatic flag management                                                  | ⬜ Not Started|         | Define endpoints            |
 | Targeting           | Enable/disable flags globally, by environment, user, group, or percentage                  | 🟡 In Progress|         | Percentage rollout logic    |
 | Audit Logging       | Full change history: who, what, when for all flag edits                                    | 🟡 In Progress|         | Choose log storage          |
