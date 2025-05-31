@@ -26,6 +26,22 @@ jobs:
       - name: Build
         run: dotnet build AlphaFeatureToggler.sln --configuration Release --no-restore
 
+      - name: Bump version
+        id: version-bump
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          tag_prefix: 'v'
+          major_pattern: 'BREAKING CHANGE:'
+          minor_pattern: 'feat:'
+          patch_pattern: 'fix:'
+          format: 'v${major}.${minor}.${patch}'
+
+      - name: Update .csproj version
+        run: |
+          version=$(echo "${{ steps.version-bump.outputs.version }}" | sed 's/^v//')
+          sed -i 's|<Version>.*</Version>|<Version>'"$version"'</Version>|' src/AlphaFeatureToggler/AlphaFeatureToggler.csproj
+        shell: bash
+
       - name: Pack NuGet package
         run: dotnet pack src/AlphaFeatureToggler/AlphaFeatureToggler.csproj --configuration Release --no-build --output ./nupkg
 
