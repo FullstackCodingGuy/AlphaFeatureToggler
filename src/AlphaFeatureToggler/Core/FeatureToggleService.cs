@@ -1,9 +1,16 @@
 using System.Threading.Tasks;
 using Microsoft.FeatureManagement;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace AlphaFeatureToggler.Core
 {
+    public class FeatureToggleServiceOptions
+    {
+        public FeatureEnvironment Environment { get; set; } = FeatureEnvironment.Production;
+    }
+
     /// <summary>
     /// Implementation of the feature toggle service.
     /// </summary>
@@ -14,37 +21,44 @@ namespace AlphaFeatureToggler.Core
         private readonly IFeatureChangePropagator _changePropagator;
         private readonly IFeaturePromotionWorkflow _promotionWorkflow;
         private readonly IFeatureApiIntegration _apiIntegration;
-        // ...other dependencies like access control, kill switch storage, etc.
+        private readonly FeatureToggleServiceOptions _options;
+        private static readonly ConcurrentDictionary<(string, FeatureEnvironment), bool> _killSwitches = new();
+        private static readonly ConcurrentDictionary<(string, FeatureEnvironment), HashSet<string>> _featureAccess = new();
 
         public FeatureToggleService(
             IFeatureManager featureManager,
             IFeatureAuditLogger auditLogger,
             IFeatureChangePropagator changePropagator,
             IFeaturePromotionWorkflow promotionWorkflow,
-            IFeatureApiIntegration apiIntegration)
+            IFeatureApiIntegration apiIntegration,
+            IOptions<FeatureToggleServiceOptions> optionsAccessor)
         {
             _featureManager = featureManager;
             _auditLogger = auditLogger;
             _changePropagator = changePropagator;
             _promotionWorkflow = promotionWorkflow;
             _apiIntegration = apiIntegration;
+            _options = optionsAccessor.Value;
         }
 
-        public async Task<bool> IsEnabledAsync(string featureName, FeatureEnvironment environment)
+        public async Task<bool> IsEnabledAsync(string featureName, FeatureEnvironment? environment = null)
         {
-            // TODO: Add environment and access control logic
+            var env = environment ?? _options.Environment;
+            // Access control: check if feature is allowed for this environment/user (demo: always allowed)
+            if (await IsKillSwitchActiveAsync(featureName, env))
+                return false;
             return await _featureManager.IsEnabledAsync(featureName);
         }
 
-        public async Task<bool> IsKillSwitchActiveAsync(string featureName, FeatureEnvironment environment)
+        public Task<bool> IsKillSwitchActiveAsync(string featureName, FeatureEnvironment? environment = null)
         {
-            // TODO: Implement kill switch state check
-            return false;
+            var env = environment ?? _options.Environment;
+            return Task.FromResult(_killSwitches.TryGetValue((featureName, env), out var active) && active);
         }
 
         public async Task ActivateKillSwitchAsync(string featureName, FeatureEnvironment environment, string reason, string userId)
         {
-            // TODO: Implement kill switch activation
+            _killSwitches[(featureName, environment)] = true;
             await _auditLogger.LogAsync(new FeatureAuditLog
             {
                 FeatureName = featureName,
@@ -59,7 +73,7 @@ namespace AlphaFeatureToggler.Core
 
         public async Task DeactivateKillSwitchAsync(string featureName, FeatureEnvironment environment, string userId)
         {
-            // TODO: Implement kill switch deactivation
+            _killSwitches[(featureName, environment)] = false;
             await _auditLogger.LogAsync(new FeatureAuditLog
             {
                 FeatureName = featureName,
