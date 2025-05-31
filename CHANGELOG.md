@@ -1,3 +1,8 @@
+## [1.0.2] - 2025-05-31
+
+- Merge branch 'main' of https://github.com/FullstackCodingGuy/AlphaFeatureToggler
+- optimizations
+
 ## [1.0.1] - 2025-05-31
 
 - Update AlphaFeatureToggler.csproj
