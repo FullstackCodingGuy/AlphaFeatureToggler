@@ -7,7 +7,7 @@ A feature toggle for every application.
 
 ## 🛠️ Building Feature Management Tool (with Microsoft Feature Management as Backend)
 
-## 🎯 **Primary (Must-Have) Features**
+## 🎯 **Primary Features**
 
 1. **Feature Flag CRUD (Create, Read, Update, Delete)**
    - Web UI and API for managing feature flags.
@@ -40,7 +40,7 @@ A feature toggle for every application.
 
 ---
 
-## 🚀 **Secondary (Nice-to-Have/Advanced) Features**
+## 🚀 **Secondary Features**
 
 1. **Custom Targeting Rules**
    - Complex conditions: combinations of user traits, geo, device, etc.
@@ -81,7 +81,7 @@ A feature toggle for every application.
 
 ---
 
-## 📋 **Summary Table**
+## 📋 **Updated Summary Table**
 
 | Feature                      | Priority    | Supported by MS Feature Mgmt | Custom Implementation Needed |
 |------------------------------|-------------|------------------------------|-----------------------------|
@@ -100,118 +100,25 @@ A feature toggle for every application.
 | Integrations                 | Secondary   | ❌                           | Yes                         |
 | Approval Workflows           | Secondary   | ❌                           | Yes                         |
 | Multi-Tenancy                | Secondary   | ❌                           | Yes                         |
+| Caching                      | Primary     | ❌                           | Yes                         |
+| Change Propagation           | Primary     | ❌                           | Yes                         |
+| Promotion Workflow           | Primary     | ❌                           | Yes                         |
 
 ---
 
-
-
-
-# 🚩 Feature Flag Management Core Capabilities – Project Plan
-
-This project plan focuses on building a user-friendly, auditable, and safe feature flag management system, using Microsoft Feature Management as the backend (or a similar provider).
-
----
-
-## Project Overview
+## 🚩 **Updated Project Overview**
 
 | Area                | Description                                                                                 | Status        | Owner   | Notes                       |
 |---------------------|--------------------------------------------------------------------------------------------|--------------|---------|-----------------------------|
 | UI/UX               | Feature flag dashboard for CRUD, search, filter, and flag details                          | ⬜ Not Started|         | Wireframes needed           |
 | API                 | REST API for programmatic flag management                                                  | ⬜ Not Started|         | Define endpoints            |
-| Targeting           | Enable/disable flags globally, by environment, user, group, or percentage                  | ⬜ Not Started|         | Percentage rollout logic    |
-| Audit Logging       | Full change history: who, what, when for all flag edits                                    | ⬜ Not Started|         | Choose log storage          |
+| Targeting           | Enable/disable flags globally, by environment, user, group, or percentage                  | 🟡 In Progress|         | Percentage rollout logic    |
+| Audit Logging       | Full change history: who, what, when for all flag edits                                    | 🟡 In Progress|         | Choose log storage          |
 | Access Control      | RBAC: admin, editor, viewer roles for managing flags                                       | ⬜ Not Started|         | Integrate with auth system  |
-| Change Propagation  | Instant/near-real-time rollout of flag changes across services                             | ⬜ Not Started|         | Use Azure AppConfig, polling|
-| Kill Switch         | Instantly disable any flag across all environments                                         | ⬜ Not Started|         | UI button + API endpoint    |
-| Promotion Workflow  | Safely promote flag settings between environments (dev → staging → prod)                   | ⬜ Not Started|         | Approval step optional      |
+| Change Propagation  | Instant/near-real-time rollout of flag changes across services                             | 🟡 In Progress|         | Use Azure AppConfig, polling|
+| Kill Switch         | Instantly disable any flag across all environments                                         | 🟢 Complete   |         | UI button + API endpoint    |
+| Promotion Workflow  | Safely promote flag settings between environments (dev → staging → prod)                   | 🟡 In Progress|         | Approval step optional      |
 | Documentation       | Inline flag descriptions, owner, tags for each flag                                        | ⬜ Not Started|         | UI fields + API support     |
-| Testing             | Unit/integration tests for CRUD, targeting, kill switch, and audit logging                 | ⬜ Not Started|         | CI/CD coverage              |
+| Testing             | Unit/integration tests for CRUD, targeting, kill switch, and audit logging                 | 🟡 In Progress|         | CI/CD coverage              |
 
 ---
-
-## Milestones
-
-### 1. **Initial Setup**
-- [ ] Project repo, dev environment, and CI/CD pipeline
-- [ ] Integrate Microsoft Feature Management backend
-
-### 2. **Feature Flag Management UI & API**
-- [ ] Design and implement dashboard
-- [ ] Implement REST API for flags
-- [ ] Add metadata (descriptions, owners, tags)
-
-### 3. **Targeting & Segmentation**
-- [ ] Global and environment-based toggling
-- [ ] User/group/role-based targeting
-- [ ] Percentage rollout (canary releases)
-
-### 4. **Auditability**
-- [ ] Change log schema and storage
-- [ ] Display flag change history in UI
-- [ ] Export/download audit logs
-
-### 5. **Access Control**
-- [ ] Role-based access (admin, editor, viewer)
-- [ ] Integrate with authentication system
-
-### 6. **Safe Rollout Features**
-- [ ] Real-time/instant flag update propagation
-- [ ] Implement kill switch (UI + API)
-- [ ] Promotion workflow (move flags between environments)
-
-### 7. **Testing & Validation**
-- [ ] Unit tests for all components
-- [ ] Integration tests for API/UI/propagation
-- [ ] User acceptance testing
-
-### 8. **Documentation & Training**
-- [ ] User guide and onboarding docs
-- [ ] Inline help and flag documentation
-
----
-
-## Status Key
-
-- ⬜ Not Started
-- 🟡 In Progress
-- 🟢 Complete
-
----
-
-## 📝 Feature Attributes Example
-
-You can define features with attributes in your DI setup:
-
-```csharp
-services.AddAlphaFeatureToggler(opt => {
-    opt.Features = new List<FeatureConfig>
-    {
-        new FeatureConfig {
-            Name = "PremiumFeature",
-            Enabled = true,
-            Attributes = new Dictionary<string, object> {
-                { "MinimumUserTier", "Premium" },
-                { "RolloutPercentage", 25 }
-            }
-        },
-        new FeatureConfig {
-            Name = "BetaFeature",
-            Enabled = true,
-            Attributes = new Dictionary<string, object> {
-                { "AllowedRoles", new[] { "Admin", "Developer" } },
-                { "ExpirationDate", "2024-12-31" }
-            }
-        }
-    };
-});
-```
-
-Retrieve and use attributes at runtime:
-
-```csharp
-var attrs = toggler.GetFeatureAttributes("PremiumFeature");
-if (attrs?["MinimumUserTier"] as string == "Premium")
-{
-    // Enable premium feature for this user
-}
-```

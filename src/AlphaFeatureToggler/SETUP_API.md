@@ -98,22 +98,30 @@ bool canAccess = await toggler.IsEnabledAsync("AdvancedReporting");
 
 ---
 
-## Feature Attributes
 
-Features can be configured with custom attributes during initialization or runtime:
+
+## 📝 Feature Attributes Example
+
+You can define features with attributes in your DI setup:
 
 ```csharp
 services.AddAlphaFeatureToggler(opt => {
     opt.Features = new List<FeatureConfig>
     {
-        new FeatureConfig 
-        { 
+        new FeatureConfig {
             Name = "PremiumFeature",
             Enabled = true,
-            Attributes = new Dictionary<string, object>
-            {
+            Attributes = new Dictionary<string, object> {
                 { "MinimumUserTier", "Premium" },
                 { "RolloutPercentage", 25 }
+            }
+        },
+        new FeatureConfig {
+            Name = "BetaFeature",
+            Enabled = true,
+            Attributes = new Dictionary<string, object> {
+                { "AllowedRoles", new[] { "Admin", "Developer" } },
+                { "ExpirationDate", "2024-12-31" }
             }
         }
     };
@@ -124,20 +132,10 @@ Retrieve and use attributes at runtime:
 
 ```csharp
 var attrs = toggler.GetFeatureAttributes("PremiumFeature");
-if (attrs?["MinimumUserTier"] as string == "Premium" && 
-    user.Tier == "Premium")
+if (attrs?["MinimumUserTier"] as string == "Premium")
 {
-    // Enable premium feature
+    // Enable premium feature for this user
 }
 ```
-
-Common attribute use cases:
-- User tiers and roles
-- Rollout percentages
-- Expiration dates
-- A/B testing variants
-- Feature dependencies
-
----
 
 For more, see the source code and integration tests for advanced usage and extension points.
