@@ -107,11 +107,11 @@ Leverages Microsoft's Feature Management framework as the foundation, while exte
 
 ### Dashboard
 
-<img width="922" alt="Dashboard" src="https://github.com/user-attachments/assets/d3d6c7f3-6f0b-467f-b52e-336a0c62f602" />
+<img width="1262" alt="Create Flag" src="https://github.com/user-attachments/assets/354e1b9f-8f9a-4ec8-bca1-b48c4cfa7588" />
 
 ### Creating a Feature Flag
 
-<img width="1262" alt="Create Flag" src="https://github.com/user-attachments/assets/354e1b9f-8f9a-4ec8-bca1-b48c4cfa7588" />
+<img width="922" alt="Dashboard" src="https://github.com/user-attachments/assets/d3d6c7f3-6f0b-467f-b52e-336a0c62f602" />
 
 ### Rollout Strategy
 
