@@ -118,10 +118,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Refined Header */}
-      <header className="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white/90 backdrop-blur top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-2">
           {/* Top Row: Brand & Logout */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-100">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg">
@@ -135,7 +135,7 @@ const Index = () => {
                 </div>
               </div>
               <Badge variant="secondary" className="bg-blue-100 text-blue-700 ml-2 px-3 py-1 rounded-full text-xs font-semibold hidden md:inline-flex">
-                Multi-Tenant SaaS
+                {selectedEnvironment}
               </Badge>
             </div>
             <div className="flex items-center gap-3">
@@ -172,22 +172,26 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Bottom Row: Controls - Enhanced layout with label on top, control at bottom */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
+          
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+
+        {/* Bottom Row: Controls - Enhanced layout with label on top, control at bottom */}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2 sticky top-0 z-50 backdrop-blur">
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              {/* Organization Selector */}
               <div className="flex flex-col items-start w-full sm:w-auto">
                 <div className="w-full">
                   <TenantSelector selected={selectedTenant} onSelect={setSelectedTenant} />
                 </div>
               </div>
-              {/* Application Selector */}
               <div className="flex flex-col items-start w-full sm:w-auto">
                 <div className="w-full">
                   <ApplicationSelector selected={selectedApplication} onSelect={setSelectedApplication} />
                 </div>
               </div>
-              {/* Environment Selector */}
               <div className="flex flex-col items-start w-full sm:w-auto">
                 <div className="w-full">
                   <EnvironmentSelector selected={selectedEnvironment} onSelect={setSelectedEnvironment} />
@@ -202,33 +206,11 @@ const Index = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 Create Flag
               </Button>
-              <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-                <Input
-                  placeholder="Search feature flags..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white/70 border-slate-200 focus:border-blue-400"
-                />
-              </div>
-              <Button
-                variant="outline"
-                size="default"
-                onClick={() => setIsFilterDialogOpen(true)}
-                className="bg-white/80 hover:bg-white/90 border-slate-300 flex-shrink-0"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Filters</span>
-              </Button>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Enhanced Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 py-4">
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-4 lg:p-6">
               <div className="flex items-center justify-between">
@@ -322,6 +304,15 @@ const Index = () => {
               </TabsList>
             </div>
             <div className="flex justify-end w-full">
+               <div className="relative flex-1 max-w-[180px] mx-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <Input
+                  placeholder="Search feature flags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 py-6 pr-10 bg-white/70 border-slate-200 focus:border-blue-400"
+                />
+              </div>
               <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
             </div>
           </div>
