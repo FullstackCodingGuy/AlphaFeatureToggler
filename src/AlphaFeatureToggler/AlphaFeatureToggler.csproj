@@ -16,5 +16,8 @@
     <None Include="../../LICENSE" Pack="true" PackagePath="" />
     <None Include="SETUP_API.md" Pack="true" PackagePath="" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AlphaFeatureToggler.Shared\AlphaFeatureToggler.Shared.csproj" />
+  </ItemGroup>
 
 </Project>
