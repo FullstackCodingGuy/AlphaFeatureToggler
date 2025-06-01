@@ -11,6 +11,11 @@ public interface IFeatureFlagService
     FeatureFlag CreateFeatureFlag(FeatureFlag featureFlag);
     FeatureFlag? UpdateFeatureFlag(Guid id, FeatureFlag featureFlag);
     bool DeleteFeatureFlag(Guid id);
+    IEnumerable<FeatureFlag> SearchFeatureFlags(string? query, string? status, string? type, string? environment, int page, int pageSize);
+    int GetRolloutProgress(Guid id);
+    int UpdateRolloutProgress(Guid id, int progress);
+    List<TargetingRule> GetTargetingRules(Guid id);
+    List<TargetingRule> UpdateTargetingRules(Guid id, List<TargetingRule> rules);
 }
 
 public class FeatureFlagService : IFeatureFlagService
@@ -74,5 +79,49 @@ public class FeatureFlagService : IFeatureFlagService
             throw new UnauthorizedAccessException("User does not have access to delete this feature flag.");
         }
         return _featureFlagRepository.Delete(id);
+    }
+
+    public IEnumerable<FeatureFlag> SearchFeatureFlags(string? query, string? status, string? type, string? environment, int page, int pageSize)
+    {
+        var all = _featureFlagRepository.GetAll();
+        if (!string.IsNullOrEmpty(query))
+            all = all.Where(f => f.Name != null && f.Name.Contains(query, StringComparison.OrdinalIgnoreCase));
+        if (!string.IsNullOrEmpty(status))
+            all = all.Where(f => f.IsEnabled == (status.ToLower() == "active"));
+        if (!string.IsNullOrEmpty(type))
+            all = all.Where(f => f.Type != null && f.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+        if (!string.IsNullOrEmpty(environment))
+            all = all.Where(f => f.Environments != null && f.Environments.Contains(environment, StringComparer.OrdinalIgnoreCase));
+        return all.Skip((page - 1) * pageSize).Take(pageSize);
+    }
+
+    public int GetRolloutProgress(Guid id)
+    {
+        var flag = _featureFlagRepository.GetById(id);
+        return flag?.RolloutProgress ?? 0;
+    }
+
+    public int UpdateRolloutProgress(Guid id, int progress)
+    {
+        var flag = _featureFlagRepository.GetById(id);
+        if (flag == null) return 0;
+        flag.RolloutProgress = progress;
+        _featureFlagRepository.Update(flag);
+        return flag.RolloutProgress;
+    }
+
+    public List<TargetingRule> GetTargetingRules(Guid id)
+    {
+        var flag = _featureFlagRepository.GetById(id);
+        return flag?.TargetingRules ?? new List<TargetingRule>();
+    }
+
+    public List<TargetingRule> UpdateTargetingRules(Guid id, List<TargetingRule> rules)
+    {
+        var flag = _featureFlagRepository.GetById(id);
+        if (flag == null) return new List<TargetingRule>();
+        flag.TargetingRules = rules;
+        _featureFlagRepository.Update(flag);
+        return flag.TargetingRules;
     }
 }
