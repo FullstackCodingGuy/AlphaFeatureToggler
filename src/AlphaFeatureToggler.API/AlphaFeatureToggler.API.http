@@ -1,0 +1,6 @@
+@AlphaFeatureToggler.API_HostAddress = http://localhost:5096
+
+GET {{AlphaFeatureToggler.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
