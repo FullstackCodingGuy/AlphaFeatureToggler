@@ -5,20 +5,6 @@ A feature toggle for every application.
 
 [![Build, Test, and Publish NuGet Package](https://github.com/FullstackCodingGuy/AlphaFeatureToggler/actions/workflows/ci.yml/badge.svg)](https://github.com/FullstackCodingGuy/AlphaFeatureToggler/actions/workflows/ci.yml)
 
-**Dashboard**
-<img width="922" alt="image" src="https://github.com/user-attachments/assets/d3d6c7f3-6f0b-467f-b52e-336a0c62f602" />
-
-**Creating new feature flag**
-<img width="1262" alt="image" src="https://github.com/user-attachments/assets/354e1b9f-8f9a-4ec8-bca1-b48c4cfa7588" />
-
-**Rollout Strategy**
-<img width="865" alt="image" src="https://github.com/user-attachments/assets/00b60bde-3eee-4804-a6c0-d402eb610fb6" />
-
-**Custom Attributes**
-<img width="854" alt="image" src="https://github.com/user-attachments/assets/309a1c9c-1783-47b8-b187-7ea803b5ff3d" />
-
-**Configuring Environment**
-<img width="869" alt="image" src="https://github.com/user-attachments/assets/47baace0-0d26-4b62-a872-f259e417ff01" />
 
 
 ## 🛠️ Building Feature Management Tool (with Microsoft Feature Management as Backend)
@@ -84,6 +70,31 @@ A feature toggle for every application.
 
 9. **Localization/Internationalization**
    - Support for multi-language flag names, descriptions, and targeting.
+
+---
+
+
+
+**Dashboard**
+
+<img width="922" alt="image" src="https://github.com/user-attachments/assets/d3d6c7f3-6f0b-467f-b52e-336a0c62f602" />
+
+**Creating new feature flag**
+
+<img width="1262" alt="image" src="https://github.com/user-attachments/assets/354e1b9f-8f9a-4ec8-bca1-b48c4cfa7588" />
+
+**Rollout Strategy**
+
+<img width="865" alt="image" src="https://github.com/user-attachments/assets/00b60bde-3eee-4804-a6c0-d402eb610fb6" />
+
+**Custom Attributes**
+
+<img width="854" alt="image" src="https://github.com/user-attachments/assets/309a1c9c-1783-47b8-b187-7ea803b5ff3d" />
+
+**Configuring Environment**
+
+<img width="869" alt="image" src="https://github.com/user-attachments/assets/47baace0-0d26-4b62-a872-f259e417ff01" />
+
 
 ---
 
