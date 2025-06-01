@@ -1,151 +1,180 @@
-# AlphaFeatureToggler
 
-A feature toggle for every application.
+# 🚦 AlphaFeatureToggler
 
+**Feature flag management for every application, with a modern dashboard, targeting, and integration-ready API.**
 
 [![Build, Test, and Publish NuGet Package](https://github.com/FullstackCodingGuy/AlphaFeatureToggler/actions/workflows/ci.yml/badge.svg)](https://github.com/FullstackCodingGuy/AlphaFeatureToggler/actions/workflows/ci.yml)
 
+---
 
+## 🛠️ Built on Microsoft Feature Management
 
-## 🛠️ Building Feature Management Tool (with Microsoft Feature Management as Backend)
-
-## 🎯 **Primary Features**
-
-1. **Feature Flag CRUD (Create, Read, Update, Delete)**
-   - Web UI and API for managing feature flags.
-   - Ability to organize flags by project/application/environment.
-2. **Feature Attributes**
-   - Attach custom metadata (e.g., rollout %, allowed roles, expiration) to each feature flag for advanced scenarios.
-3. **Targeting & Segmentation**
-   - Enable/disable flags for specific users, groups, or attributes (e.g., by user ID, role, region).
-   - Support for percentage-based rollouts (e.g., enable for 10% of users).
-   - Feature-specific attributes for fine-grained control (e.g., minimum user tier, expiration dates).
-
-4. **Multi-Environment Support**
-   - Separate configuration for dev, staging, and production.
-   - Promote flag values/settings between environments.
-
-5. **Audit Logging & Change History**
-   - Track who changed what and when for compliance and debugging.
-
-6. **Instant Flag Updates**
-   - Real-time (or near real-time) flag changes that take effect across services without redeploy.
-
-7. **SDK/API Integration**
-   - SDKs or REST API endpoints for your apps/services to evaluate flags dynamically.
-
-8. **User Access Controls**
-   - Basic roles/permissions (e.g., admin, editor, viewer) for flag management.
-
-9. **Flag Status & Kill Switch**
-   - Easy way to view all current flag statuses and instantly disable (kill switch) a flag across the system.
+Leverages Microsoft's Feature Management framework as the foundation, while extending it with a robust web UI, audit logging, advanced targeting, and more.
 
 ---
 
-## 🚀 **Secondary Features**
+## 🎯 Core Capabilities
 
-1. **Custom Targeting Rules**
-   - Complex conditions: combinations of user traits, geo, device, etc.
+### 1. 🔁 Feature Flag Management (CRUD)
 
-2. **A/B Testing & Experimentation**
-   - Native support for running experiments and measuring results (may require additional analytics integration).
+* Web dashboard and REST API to create, view, update, and delete feature flags.
+* Organize flags by project, environment (dev/staging/prod), or application module.
 
-3. **Integrations**
-   - Connect with Slack, Jira, GitHub, Datadog, etc., for notifications and workflow automations.
+### 2. 🧩 Feature Attributes
 
-4. **Analytics & Usage Tracking**
-   - Track flag usage, impressions, and impact on user behavior or system performance.
+* Attach rich metadata: rollout percentage, expiration dates, roles allowed, custom notes, etc.
 
-5. **Approval Workflows**
-   - Flag changes can require review/approval before going live.
+### 3. 🎯 Targeting & Segmentation
 
-6. **Multi-Tenancy Support**
-   - Ability to separate flags and access for different business units or clients.
+* Enable flags for specific:
 
-7. **Scheduled Rollouts**
-   - Schedule flag changes for specific times or windows.
+  * Users (by ID, email, etc.)
+  * Roles, groups, or geographies
+  * Custom traits or attributes
+* Support for percentage-based rollouts and dynamic rules.
 
-8. **Self-Service API Keys & Webhooks**
-   - For automation and integration with CI/CD pipelines and external systems.
+### 4. 🌐 Multi-Environment Configuration
 
-9. **Localization/Internationalization**
-   - Support for multi-language flag names, descriptions, and targeting.
+* Isolated configs for dev, staging, and production.
+* Promote flag values safely across environments.
 
----
+### 5. 📜 Audit Logging
 
+* Full trace of all changes: who changed what, when, and how.
+* Helpful for debugging and compliance.
 
+### 6. ⚡ Instant Updates
 
-**Dashboard**
+* Real-time (or near real-time) propagation of flag changes across services.
+* No redeploys required.
 
-<img width="922" alt="image" src="https://github.com/user-attachments/assets/d3d6c7f3-6f0b-467f-b52e-336a0c62f602" />
+### 7. 🧪 SDK/API Integration
 
-**Creating new feature flag**
+* .NET SDK support (via Microsoft.FeatureManagement).
+* REST API for non-.NET environments.
 
-<img width="1262" alt="image" src="https://github.com/user-attachments/assets/354e1b9f-8f9a-4ec8-bca1-b48c4cfa7588" />
+### 8. 🔐 Role-Based Access Control (RBAC)
 
-**Rollout Strategy**
+* User permissions: Admin, Editor, Viewer.
 
-<img width="865" alt="image" src="https://github.com/user-attachments/assets/00b60bde-3eee-4804-a6c0-d402eb610fb6" />
+### 9. 🛑 Kill Switch
 
-**Custom Attributes**
-
-<img width="854" alt="image" src="https://github.com/user-attachments/assets/309a1c9c-1783-47b8-b187-7ea803b5ff3d" />
-
-**Configuring Environment**
-
-<img width="869" alt="image" src="https://github.com/user-attachments/assets/47baace0-0d26-4b62-a872-f259e417ff01" />
-
+* One-click flag disable across all environments and services.
 
 ---
 
-## 💡 **Recommendations for Building with Microsoft Feature Management**
+## 🚀 Extended Capabilities
 
-- **Primary Features:** Microsoft Feature Management supports core flag evaluation, targeting, and integration with .NET apps. Build your UI, API, and audit layers on top of this.
-- **Real-Time Updates:** Use Azure App Configuration with push notifications/event triggers for instant flag changes.
-- **Extend Targeting:** Add user segmentation and advanced rules in your business logic/UI layer.
-- **Security:** Implement RBAC and audit logging at your application level.
-- **Secondary Features:** Add analytics, integrations, and experimentation as your user base grows.
+### 1. 🧠 Custom Targeting Rules
+
+* Define complex conditions (e.g., "users in Canada on mobile who are in beta group").
+
+### 2. 🧪 A/B Testing & Experimentation
+
+* Run experiments natively (requires analytics integration).
+
+### 3. 🔌 Integrations
+
+* Connect with Slack, Jira, GitHub, Datadog, etc., for notifications and workflow automation.
+
+### 4. 📊 Analytics & Usage Tracking
+
+* Capture impressions, usage counts, and behavioral impact.
+
+### 5. ✅ Approval Workflows
+
+* Require approvals for promoting or enabling flags.
+
+### 6. 🏢 Multi-Tenant Support
+
+* Isolate flags and access by client, business unit, or app.
+
+### 7. 📆 Scheduled Rollouts
+
+* Schedule flags to activate/deactivate at specific times.
+
+### 8. 🔐 Self-Service API Keys & Webhooks
+
+* Automate flag changes from CI/CD or external systems.
+
+### 9. 🌍 Internationalization (i18n)
+
+* Multi-language support for flag names, descriptions, and targeting.
+
+---
+
+## 📸 UI Snapshots
+
+### Dashboard
+
+<img width="922" alt="Dashboard" src="https://github.com/user-attachments/assets/d3d6c7f3-6f0b-467f-b52e-336a0c62f602" />
+
+### Creating a Feature Flag
+
+<img width="1262" alt="Create Flag" src="https://github.com/user-attachments/assets/354e1b9f-8f9a-4ec8-bca1-b48c4cfa7588" />
+
+### Rollout Strategy
+
+<img width="865" alt="Rollout Strategy" src="https://github.com/user-attachments/assets/00b60bde-3eee-4804-a6c0-d402eb610fb6" />
+
+### Custom Attributes
+
+<img width="854" alt="Custom Attributes" src="https://github.com/user-attachments/assets/309a1c9c-1783-47b8-b187-7ea803b5ff3d" />
+
+### Configuring Environments
+
+<img width="869" alt="Environment Config" src="https://github.com/user-attachments/assets/47baace0-0d26-4b62-a872-f259e417ff01" />
 
 ---
 
-## 📋 **Updated Summary Table**
+## 💡 Building on Microsoft Feature Management
 
-| Feature                      | Priority    | Supported by MS Feature Mgmt | Custom Implementation Needed |
-|------------------------------|-------------|------------------------------|-----------------------------|
-| Feature Flag CRUD            | Primary     | ✔️                           | Minimal                     |
-| Feature Attributes           | Primary     | ❌                           | Yes                         |
-| Targeting/Segmentation       | Primary     | ✔️ (basic)                   | For advanced rules          |
-| Multi-Environment            | Primary     | ✔️                           | Minimal                     |
-| Audit Logging                | Primary     | ❌                           | Yes                         |
-| Instant Updates              | Primary     | ✔️ (with Azure App Config)   | Minimal                     |
-| SDK/API Integration          | Primary     | ✔️ (.NET SDK)                | For non-.NET languages      |
-| Roles/Permissions            | Primary     | ❌                           | Yes                         |
-| Flag Status/Kill Switch      | Primary     | ✔️                           | Minimal                     |
-| Custom Targeting Rules       | Secondary   | ❌                           | Yes                         |
-| A/B Testing/Experimentation  | Secondary   | ❌                           | Yes                         |
-| Analytics/Usage Tracking     | Secondary   | ❌                           | Yes                         |
-| Integrations                 | Secondary   | ❌                           | Yes                         |
-| Approval Workflows           | Secondary   | ❌                           | Yes                         |
-| Multi-Tenancy                | Secondary   | ❌                           | Yes                         |
-| Caching                      | Primary     | ❌                           | Yes                         |
-| Change Propagation           | Primary     | ❌                           | Yes                         |
-| Promotion Workflow           | Primary     | ❌                           | Yes                         |
+| Recommendation            | Notes                                                           |
+| ------------------------- | --------------------------------------------------------------- |
+| **Core Flag Evaluation**  | Use Microsoft.FeatureManagement for core functionality.         |
+| **Real-Time Updates**     | Integrate Azure App Configuration with push triggers.           |
+| **Advanced Targeting**    | Extend targeting logic in your business layer.                  |
+| **RBAC & Audit**          | Implement access control and history tracking at the app level. |
+| **Analytics/Experiments** | Build these features using custom or third-party services.      |
 
 ---
 
-## 🚩 **Updated Project Overview**
+## 📋 Feature Support Matrix
 
-| Area                | Description                                                                                 | Status        | Owner   | Notes                       |
-|---------------------|--------------------------------------------------------------------------------------------|--------------|---------|-----------------------------|
-| UI/UX               | Feature flag dashboard for CRUD, search, filter, and flag details                          | 🟡 In Progress|         | Wireframes needed           |
-| API                 | REST API for programmatic flag management                                                  | ⬜ Not Started|         | Define endpoints            |
-| Targeting           | Enable/disable flags globally, by environment, user, group, or percentage                  | 🟡 In Progress|         | Percentage rollout logic    |
-| Audit Logging       | Full change history: who, what, when for all flag edits                                    | 🟡 In Progress|         | Choose log storage          |
-| Access Control      | RBAC: admin, editor, viewer roles for managing flags                                       | ⬜ Not Started|         | Integrate with auth system  |
-| Change Propagation  | Instant/near-real-time rollout of flag changes across services                             | 🟡 In Progress|         | Use Azure AppConfig, polling|
-| Kill Switch         | Instantly disable any flag across all environments                                         | 🟢 Complete   |         | UI button + API endpoint    |
-| Promotion Workflow  | Safely promote flag settings between environments (dev → staging → prod)                   | 🟡 In Progress|         | Approval step optional      |
-| Documentation       | Inline flag descriptions, owner, tags for each flag                                        | ⬜ Not Started|         | UI fields + API support     |
-| Testing             | Unit/integration tests for CRUD, targeting, kill switch, and audit logging                 | 🟡 In Progress|         | CI/CD coverage              |
+| Feature                       | Priority | MS Feature Mgmt Support | Custom Implementation |
+| ----------------------------- | -------- | ----------------------- | --------------------- |
+| Feature Flag CRUD             | ⭐ Core   | ✅                       | Minimal               |
+| Feature Attributes            | ⭐ Core   | ❌                       | ✅                     |
+| Targeting/Segmentation        | ⭐ Core   | ✅ (Basic)               | ✅ (Advanced)          |
+| Multi-Environment             | ⭐ Core   | ✅                       | Minimal               |
+| Audit Logging                 | ⭐ Core   | ❌                       | ✅                     |
+| Instant Updates               | ⭐ Core   | ✅ (w/ Azure App Config) | Minimal               |
+| SDK/API Integration           | ⭐ Core   | ✅ (.NET SDK only)       | ✅ (REST for others)   |
+| Role-Based Access Control     | ⭐ Core   | ❌                       | ✅                     |
+| Flag Status / Kill Switch     | ⭐ Core   | ✅                       | Minimal               |
+| Custom Targeting Rules        | ⭐⭐ Extra | ❌                       | ✅                     |
+| A/B Testing / Experimentation | ⭐⭐ Extra | ❌                       | ✅                     |
+| Analytics & Usage Tracking    | ⭐⭐ Extra | ❌                       | ✅                     |
+| External Integrations         | ⭐⭐ Extra | ❌                       | ✅                     |
+| Approval Workflows            | ⭐⭐ Extra | ❌                       | ✅                     |
+| Multi-Tenant Isolation        | ⭐⭐ Extra | ❌                       | ✅                     |
+| Caching & Performance         | ⭐ Core   | ❌                       | ✅                     |
+| Change Propagation            | ⭐ Core   | ❌                       | ✅                     |
+| Promotion Workflows           | ⭐ Core   | ❌                       | ✅                     |
 
 ---
+
+## 🗂️ Project Status Overview
+
+| Area               | Description                                              | Status         | Notes                         |
+| ------------------ | -------------------------------------------------------- | -------------- | ----------------------------- |
+| UI/UX              | Dashboard for flag CRUD, search, filters, and attributes | 🟡 In Progress | Wireframes/design in progress |
+| API                | REST endpoints for flag operations                       | ⬜ Not Started  | Endpoint structure pending    |
+| Targeting          | Enable/disable by traits, groups, %, env                 | 🟡 In Progress | Core logic under dev          |
+| Audit Logging      | Log every change with metadata                           | 🟡 In Progress | Storage backend to finalize   |
+| Access Control     | Role-based user permissions                              | ⬜ Not Started  | Auth integration pending      |
+| Real-Time Updates  | Flag updates without service restart                     | 🟡 In Progress | Azure App Config integration  |
+| Kill Switch        | Immediate deactivation toggle                            | ✅ Complete     | Fully functional              |
+| Promotion Workflow | Dev → Staging → Prod with optional approvals             | 🟡 In Progress | Flow needs definition         |
+| Flag Documentation | Add descriptions, tags, owner info                       | ⬜ Not Started  | UI/API changes required       |
+| Automated Testing  | Unit + Integration for core modules                      | 🟡 In Progress | CI setup ongoing              |
