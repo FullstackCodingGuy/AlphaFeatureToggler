@@ -1,27 +1,76 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, X, Target, Settings, Users, Zap, GitBranch } from 'lucide-react';
 import UserAttributesInput from './UserAttributesInput';
 import { UserAttribute } from '@/stores/featureFlagStore';
+import ReactSelect from 'react-select';
 
 interface CreateFlagModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
-  initialData?: any;
+  onSubmit: (data: {
+    name: string;
+    displayName: string;
+    description: string;
+    type: string;
+    status: boolean;
+    rollout: number;
+    tags: string[];
+    environments: string[];
+    targeting: string;
+    userAttributes: UserAttribute[];
+    defaultValue: string;
+    killSwitchEnabled: boolean;
+    temporaryFlag: boolean;
+    isEnabledForAllUsers: boolean;
+    specificUsers: { value: string; label: string }[];
+    specificUserGroups: { value: string; label: string }[];
+    allowedRoles: { value: string; label: string }[];
+  }) => void;
+  initialData?: {
+    name?: string;
+    displayName?: string;
+    description?: string;
+    type?: string;
+    defaultValue?: string;
+    tags?: string[];
+    environments?: string[];
+    killSwitchEnabled?: boolean;
+    temporaryFlag?: boolean;
+    targeting?: string;
+    userAttributes?: UserAttribute[];
+    rollout?: number;
+  };
   isEditing?: boolean;
 }
+
+const sampleUsers = [
+  { value: 'user1', label: 'John Doe' },
+  { value: 'user2', label: 'Jane Smith' },
+  { value: 'user3', label: 'Alice Johnson' },
+];
+
+const sampleUserGroups = [
+  { value: 'group1', label: 'Admins' },
+  { value: 'group2', label: 'Developers' },
+  { value: 'group3', label: 'Testers' },
+];
+
+const sampleRoles = [
+  { value: 'role1', label: 'Admin' },
+  { value: 'role2', label: 'Editor' },
+  { value: 'role3', label: 'Viewer' },
+];
 
 const CreateFlagModal: React.FC<CreateFlagModalProps> = ({
   isOpen,
@@ -52,6 +101,11 @@ const CreateFlagModal: React.FC<CreateFlagModalProps> = ({
 
   const [currentTag, setCurrentTag] = useState('');
   const [selectedEnvironments, setSelectedEnvironments] = useState<string[]>([]);
+  const [rolloutPercentage, setRolloutPercentage] = useState(100);
+  const [isEnabledForAllUsers, setIsEnabledForAllUsers] = useState(false);
+  const [specificUsers, setSpecificUsers] = useState([]);
+  const [specificUserGroups, setSpecificUserGroups] = useState([]);
+  const [allowedRoles, setAllowedRoles] = useState([]);
 
   useEffect(() => {
     if (initialData && isEditing) {
@@ -93,7 +147,11 @@ const CreateFlagModal: React.FC<CreateFlagModalProps> = ({
       userAttributes: userAttributes,
       defaultValue: flagData.defaultValue,
       killSwitchEnabled: flagData.killSwitchEnabled,
-      temporaryFlag: flagData.temporaryFlag
+      temporaryFlag: flagData.temporaryFlag,
+      isEnabledForAllUsers,
+      specificUsers,
+      specificUserGroups,
+      allowedRoles
     };
 
     console.log('Submitting flag:', submitData);
@@ -359,6 +417,53 @@ const CreateFlagModal: React.FC<CreateFlagModalProps> = ({
                           onChange={(e) => setFlagData(prev => ({...prev, targeting: e.target.value}))}
                           rows={3}
                         />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={isEnabledForAllUsers}
+                          onCheckedChange={setIsEnabledForAllUsers}
+                        />
+                        <Label className="text-sm font-medium text-gray-700">Enabled for All Users</Label>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="specificUsers">Specific Users</Label>
+                          <ReactSelect
+                            id="specificUsers"
+                            options={sampleUsers}
+                            value={specificUsers}
+                            onChange={setSpecificUsers}
+                            isMulti
+                            classNamePrefix="select"
+                            placeholder="Select users..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="specificUserGroups">Specific User Groups</Label>
+                          <ReactSelect
+                            id="specificUserGroups"
+                            options={sampleUserGroups}
+                            value={specificUserGroups}
+                            onChange={setSpecificUserGroups}
+                            isMulti
+                            classNamePrefix="select"
+                            placeholder="Select user groups..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="allowedRoles">Allowed Roles</Label>
+                          <ReactSelect
+                            id="allowedRoles"
+                            options={sampleRoles}
+                            value={allowedRoles}
+                            onChange={setAllowedRoles}
+                            isMulti
+                            classNamePrefix="select"
+                            placeholder="Select roles..."
+                          />
+                        </div>
                       </div>
                     </div>
                   </CardContent>
