@@ -37,10 +37,16 @@ public class FeatureFlagRepository : IFeatureFlagRepository
         var existingFeatureFlag = GetById(featureFlag.Id);
         if (existingFeatureFlag != null)
         {
-            _featureFlags.Remove(existingFeatureFlag);
-            _featureFlags.Add(featureFlag);
+            // Update all properties
+            existingFeatureFlag.Name = featureFlag.Name;
+            existingFeatureFlag.IsEnabled = featureFlag.IsEnabled;
+            existingFeatureFlag.AllowedRoles = featureFlag.AllowedRoles;
+            existingFeatureFlag.TargetingRules = featureFlag.TargetingRules;
+            existingFeatureFlag.Type = featureFlag.Type;
+            existingFeatureFlag.Environments = featureFlag.Environments;
+            existingFeatureFlag.RolloutProgress = featureFlag.RolloutProgress;
         }
-        return featureFlag;
+        return existingFeatureFlag ?? featureFlag;
     }
 
     public bool Delete(Guid id)
