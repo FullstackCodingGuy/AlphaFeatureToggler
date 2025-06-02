@@ -1,4 +1,4 @@
-using AlphaFeatureToggler.API.Models;
+using AlphaFeatureToggler.Models;
 
 namespace AlphaFeatureToggler.API.Repositories;
 

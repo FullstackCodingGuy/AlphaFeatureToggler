@@ -1,4 +1,4 @@
-namespace AlphaFeatureToggler.Shared.Models;
+namespace AlphaFeatureToggler.Models;
 
 public class FeatureFlag
 {

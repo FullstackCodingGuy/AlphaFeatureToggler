@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using AlphaFeatureToggler.Shared.Models;
+using AlphaFeatureToggler.Models;
 using AlphaFeatureToggler.API.Services;
 
 namespace AlphaFeatureToggler.API.Controllers;

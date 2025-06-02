@@ -5,11 +5,13 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler", "src\AlphaFeatureToggler\AlphaFeatureToggler.csproj", "{DEFB8B3C-4848-345F-06AC-C56D8E9B1CAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler", "AlphaFeatureToggler\AlphaFeatureToggler.csproj", "{DEFB8B3C-4848-345F-06AC-C56D8E9B1CAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler.Tests", "src\AlphaFeatureToggler.Tests\AlphaFeatureToggler.Tests.csproj", "{A7D37576-5720-2102-4F80-15861243429F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler.Tests", "AlphaFeatureToggler.Tests\AlphaFeatureToggler.Tests.csproj", "{A7D37576-5720-2102-4F80-15861243429F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler.Shared", "src\AlphaFeatureToggler.Shared\AlphaFeatureToggler.Shared.csproj", "{544645C4-5634-4509-BA61-CF3E54C095C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler.ConsoleDemo", "AlphaFeatureToggler.ConsoleDemo\AlphaFeatureToggler.ConsoleDemo.csproj", "{544645C4-5634-4509-BA61-CF3E54C095C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaFeatureToggler.API", "AlphaFeatureToggler.API\AlphaFeatureToggler.API.csproj", "{544645C4-5634-4509-BA61-CF3E54C095C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

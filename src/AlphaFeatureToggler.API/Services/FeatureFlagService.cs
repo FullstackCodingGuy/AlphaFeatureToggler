@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using AlphaFeatureToggler.Shared.Models;
-using AlphaFeatureToggler.Shared.Interfaces;
+using AlphaFeatureToggler.Models;
+using AlphaFeatureToggler.API.Repositories;
 
 namespace AlphaFeatureToggler.API.Services;
 
