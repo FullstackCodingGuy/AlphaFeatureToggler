@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "dotnet build AlphaFeatureToggler.Reusable",
+			"command": "dotnet build src/AlphaFeatureToggler.Reusable/AlphaFeatureToggler.Reusable.csproj",
+			"group": "build",
+			"problemMatcher": [
+				"$msCompile"
+			]
+		}
+	]
+}
